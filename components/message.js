@@ -1,24 +1,23 @@
 import React, { Component } from 'react';
-import { Text, TextInput, View, Button, Alert } from 'react-native';
+import {
+  Text, TextInput, View, Button, Alert,
+} from 'react-native';
 
 class Message extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       message: '',
-      sender: ''
-    }
+      sender: '',
+    };
   }
 
   render() {
     return (
-    <View>
+      <View>
         <Text>{this.sender}</Text>
         <Text>{this.props.message}</Text>
-    </View>
+      </View>
     );
   }
-
 }
-
-

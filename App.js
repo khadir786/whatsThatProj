@@ -1,31 +1,33 @@
 import { Component } from 'react';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stac';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { View, StyleSheet } from 'react-native';
 
+import Home from './components/home';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
 
+const Stack = createNativeStackNavigator();
 
 export default class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
 
-  render(){
+  render() {
+    const { navigation } = this.props;
+
     return (
+
       <NavigationContainer>
-        <>
-          <View style={styles.container}>
-            <LoginView />
-          </View>
-          <View style={styles.container}>
-            <SignUpView />
-          </View></>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Login" component={LoginView} />
+          <Stack.Screen name="Sign Up" component={SignUpView} />
+        </Stack.Navigator>
       </NavigationContainer>
-      
     );
   }
 }
@@ -38,4 +40,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
