@@ -9,8 +9,18 @@ import Home from './components/home';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
 const Stack = createNativeStackNavigator();
 
+// eslint-disable-next-line react/prefer-stateless-function
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -31,12 +41,3 @@ export default class App extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
