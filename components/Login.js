@@ -1,8 +1,11 @@
+/* eslint-disable prefer-regex-literals */
+/* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
   View, StyleSheet, TextInput, Text, Button, Alert, ActivityIndicator,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
+import { set } from 'react-hook-form';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,14 +24,49 @@ export default class LoginView extends Component {
       email: '',
       password: '',
       error: '',
+      logged: false,
+      passHidden: true,
+      // eslint-disable-next-line react/prop-types
+      navigation: props.navigation,
     };
   }
 
   componentDidMount() {
     this.setState({ isLoading: false });
+    console.log('Logged in: ', this.state.logged);
   }
 
   login = () => {
+    const toSend = {
+      email: this.state.email,
+      password: this.state.password,
+    };
+
+    return fetch('http://localhost:3333/api/1.0.0/login/', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(toSend),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response);
+          this.setState({ logged: true });
+          console.log('Logged in: ', this.state.logged);
+          this.setState({ error: '' });
+          this.state.navigation.navigate('Home');
+        } else if (response.status === 400) {
+          this.setState({ error: 'Invalid email/password' });
+          console.log('Bad request - Invalid email/password supplied');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  loginButton = () => {
     // validate email and password:
     // check if email and password are not empty
     // check if email is valid
@@ -42,10 +80,11 @@ export default class LoginView extends Component {
     } else if (!PASSWORD_REGEX.test(this.state.password)) {
       this.setState({
         error: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character '
-               + '\n And it must be at least 8 characters long',
+          + '\n And it must be at least 8 characters long',
       });
     } else {
       console.log('email', this.state.email, 'password', this.state.password);
+      this.login();
     }
   };
 
@@ -73,7 +112,13 @@ export default class LoginView extends Component {
           onChangeText={(password) => this.setState({ password })}
         />
 
-        <Button title="Login" onPress={this.login} />
+        <Button
+          title="Login"
+          onPress={() => {
+            this.loginButton();
+            // console.log('Logged in: ', this.state.logged);
+          }}
+        />
 
         <Text style={{ color: 'red' }}>{this.state.error}</Text>
       </View>

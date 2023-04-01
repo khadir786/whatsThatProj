@@ -1,3 +1,4 @@
+/* eslint-disable prefer-regex-literals */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
@@ -22,6 +23,9 @@ export default class SignUpView extends Component {
       email: '',
       password: '',
       error: '',
+      passHidden: true,
+      // eslint-disable-next-line react/prop-types
+      navigation: props.navigation,
     };
   }
 
@@ -41,9 +45,14 @@ export default class SignUpView extends Component {
       body: JSON.stringify(toSend),
     })
       .then((response) => {
-        Alert.alert('User added');
-        console.log('User added');
-      // this.getUser();
+        if (response.status === 201) {
+          console.log('User added');
+          console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
+          console.log('Email: ', this.state.email, 'Password: ', this.state.password);
+          this.state.navigation.navigate('Login');
+        } else if (response.status === 400) {
+          this.setState({ error: 'Bad Request' });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -86,6 +95,7 @@ export default class SignUpView extends Component {
         </View>
       );
     }
+
     return (
       <View style={styles.container}>
         <TextInput
