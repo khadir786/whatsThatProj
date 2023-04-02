@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
