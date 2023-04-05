@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import {
   View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { set } from 'react-hook-form';
 
 const styles = StyleSheet.create({
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ChatsView extends Component {
+export default class ContactsView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +32,7 @@ export default class ChatsView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
-    this.getContactsData();
+    // this.getContactsData();
   }
 
   getContacts() {
@@ -49,6 +50,44 @@ export default class ChatsView extends Component {
       });
   }
 
+  checkLogged = async () => {
+    // change var name 'token' for security
+    const token = await AsyncStorage.getItem('whatsthat_session_token');
+    if (token != null) {
+      return true;
+    }
+    return false;
+  };
+
+  async logout() {
+    console.log('Logout');
+    return fetch('http://localhost:3333/api/1.0.0/logout', {
+      method:
+        'POST',
+      headers: {
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+    })
+      .then(async (response) => {
+        if (response.status === 200) {
+          await AsyncStorage.removeItem('whatsthat_session_token');
+          await AsyncStorage.removeItem('whatsthat_user_id');
+          this.state.navigation.navigate('Login');
+        } else if (response.status === 401) {
+          console.log('Unauthorised');
+          await AsyncStorage.removeItem('whatsthat_session_token');
+          await AsyncStorage.removeItem('whatsthat_user_id');
+          this.state.navigation.navigate('Login');
+        } else {
+          throw console.log('something went wrong...');
+        }
+      })
+      .catch((error) => {
+        // this.setState({ error: error });
+        console.log(error);
+      });
+  }
+
   render() {
     if (this.state.isLoading) {
       return (
@@ -59,17 +98,24 @@ export default class ChatsView extends Component {
     }
 
     return (
-      <View style={styles.container}>
-        <FlatList
-          data={this.state.contactsData}
-          renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <Text>{item.item_name}</Text>
-            </View>
-          )}
-          keyExtractor={({ id }, index) => id}
+      <>
+        <Button
+          title="Logout"
+          onPress={() => this.logout()}
         />
-      </View>
+        <View style={styles.container}>
+          <FlatList
+            data={this.state.contactsData}
+            renderItem={({ item }) => (
+              <View style={styles.listItem}>
+                <Text>{item.item_name}</Text>
+              </View>
+            )}
+            keyExtractor={({ id }, index) => id}
+          />
+        </View>
+        <View><Text>Contacts Screen</Text></View>
+      </>
     );
   }
 }

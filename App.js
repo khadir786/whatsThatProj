@@ -3,40 +3,25 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { View, StyleSheet } from 'react-native';
-
-import Home from './components/home';
+// eslint-disable-next-line import/no-cycle
+import Home from './components/Home';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
+import MainNav from './components/MainNav';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-const Stack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
-    const { navigation } = this.props;
-
     return (
-
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Login" component={LoginView} />
-          <Stack.Screen name="Sign Up" component={SignUpView} />
-        </Stack.Navigator>
+        <AuthStack.Navigator initialRouteName="Home">
+          <AuthStack.Screen name="Home" component={Home} />
+          <AuthStack.Screen name="Login" component={LoginView} />
+          <AuthStack.Screen name="Sign Up" component={SignUpView} />
+          <AuthStack.Screen name="MainApp" component={MainNav} />
+        </AuthStack.Navigator>
       </NavigationContainer>
     );
   }

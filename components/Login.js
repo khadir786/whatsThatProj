@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
 import { set } from 'react-hook-form';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,6 +36,8 @@ export default class LoginView extends Component {
   componentDidMount() {
     this.setState({ isLoading: false });
     console.log('Logged in: ', this.state.logged);
+    console.log(AsyncStorage.getItem('whatsthat_user_id'));
+    console.log(AsyncStorage.getItem('whatsthat_session_token'));
   }
 
   login = () => {
@@ -50,13 +53,22 @@ export default class LoginView extends Component {
       },
       body: JSON.stringify(toSend),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.status === 200) {
           console.log(response);
-          this.setState({ logged: true });
-          console.log('Logged in: ', this.state.logged);
-          this.setState({ error: '' });
-          this.state.navigation.navigate('Home');
+          try {
+            const responseJson = await response.json();
+            await AsyncStorage.setItem('whatsthat_user_id', responseJson.id);
+            await AsyncStorage.setItem('whatsthat_session_token', responseJson.token);
+            this.setState({ logged: true });
+            console.log('Logged in: ', this.state.logged);
+            console.log(AsyncStorage.getItem('whatsthat_user_id'));
+            console.log(AsyncStorage.getItem('whatsthat_session_token'));
+            this.setState({ error: '' });
+            this.state.navigation.navigate('MainApp');
+          } catch {
+            console.log('something went wrong');
+          }
         } else if (response.status === 400) {
           this.setState({ error: 'Invalid email/password' });
           console.log('Bad request - Invalid email/password supplied');
