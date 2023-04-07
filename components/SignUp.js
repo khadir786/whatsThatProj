@@ -10,7 +10,7 @@ import * as EmailValidator from 'email-validator';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7EBEC',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -24,7 +24,6 @@ export default class SignUpView extends Component {
       email: '',
       password: '',
       error: '',
-      passHidden: true,
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
     };

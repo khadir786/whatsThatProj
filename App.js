@@ -16,11 +16,29 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        <AuthStack.Navigator initialRouteName="Home">
-          <AuthStack.Screen name="Home" component={Home} />
+        <AuthStack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            animationEnabled: true,
+            animationTypeForReplace: 'slide',
+          }}
+        >
+          <AuthStack.Screen
+            name="Home"
+            component={Home}
+            options={{
+              headerShown: false,
+            }}
+          />
           <AuthStack.Screen name="Login" component={LoginView} />
           <AuthStack.Screen name="Sign Up" component={SignUpView} />
-          <AuthStack.Screen name="MainApp" component={MainNav} />
+          <AuthStack.Screen
+            name="MainApp"
+            component={MainNav}
+            options={{
+              headerShown: false,
+            }}
+          />
         </AuthStack.Navigator>
       </NavigationContainer>
     );

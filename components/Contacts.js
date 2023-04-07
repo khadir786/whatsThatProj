@@ -3,10 +3,9 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList,
+  View, StyleSheet, Text, Button, ActivityIndicator, FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { set } from 'react-hook-form';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,8 +22,6 @@ export default class ContactsView extends Component {
     this.state = {
       isLoading: true,
       contactsData: [],
-      error: '',
-      logged: false,
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
     };
@@ -32,16 +29,26 @@ export default class ContactsView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
-    // this.getContactsData();
+    this.unsubscribe = this.state.navigation.addListener('focus', () => {
+      this.getContacts();
+    });
+    console.log('test');
   }
 
-  getContacts() {
-    // return fetch('http://10.0.2.2:3333/list')
-    return fetch('http://localhost:3333/api/1.0.0/conctacts/')
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  async getContacts() {
+    return fetch('http://localhost:3333/api/1.0.0/contacts/', {
+      headers: {
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+    })
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
-          isLoading: false,
+          // isLoading: false,
           contactsData: responseJson,
         });
       })
@@ -49,15 +56,6 @@ export default class ContactsView extends Component {
         console.log(error);
       });
   }
-
-  checkLogged = async () => {
-    // change var name 'token' for security
-    const token = await AsyncStorage.getItem('whatsthat_session_token');
-    if (token != null) {
-      return true;
-    }
-    return false;
-  };
 
   async logout() {
     console.log('Logout');
@@ -83,7 +81,6 @@ export default class ContactsView extends Component {
         }
       })
       .catch((error) => {
-        // this.setState({ error: error });
         console.log(error);
       });
   }
@@ -108,11 +105,14 @@ export default class ContactsView extends Component {
             data={this.state.contactsData}
             renderItem={({ item }) => (
               <View style={styles.listItem}>
-                <Text>{item.item_name}</Text>
+                <Text>{item.first_name}</Text>
+                <Text>{item.last_name}</Text>
+                <Text>{item.email}</Text>
               </View>
             )}
-            keyExtractor={({ id }, index) => id}
+            keyExtractor={(item) => item.user_id.toString()}
           />
+
         </View>
         <View><Text>Contacts Screen</Text></View>
       </>

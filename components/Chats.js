@@ -3,7 +3,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList,
+  View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { set } from 'react-hook-form';
@@ -103,18 +103,21 @@ export default class ChatsView extends Component {
           title="Logout"
           onPress={() => this.logout()}
         />
-        <View style={styles.container}>
-          <FlatList
-            data={this.state.chatData}
-            renderItem={({ item }) => (
-              <View style={styles.listItem}>
-                <Text>{item.item_name}</Text>
-              </View>
-            )}
-            keyExtractor={({ id }, index) => id}
-          />
-        </View>
-        <View><Text>Chats Screen</Text></View>
+
+        <ScrollView>
+          <View style={styles.container}>
+            <FlatList
+              data={this.state.chatData}
+              renderItem={({ item }) => (
+                <View style={styles.listItem}>
+                  <Text>{item.item_name}</Text>
+                </View>
+              )}
+              keyExtractor={({ id }, index) => id}
+            />
+          </View>
+          <View><Text>Chats Screen</Text></View>
+        </ScrollView>
 
       </>
     );

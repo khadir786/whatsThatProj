@@ -3,18 +3,21 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, Alert, ActivityIndicator,
+  View, StyleSheet, TextInput, Text, Button, Alert, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
-import { set } from 'react-hook-form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7EBEC',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input: {
+    backgroundColor: 'white',
+    margin: '10px',
   },
 });
 
@@ -27,7 +30,6 @@ export default class LoginView extends Component {
       password: '',
       error: '',
       logged: false,
-      passHidden: true,
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
     };
@@ -113,12 +115,14 @@ export default class LoginView extends Component {
     return (
       <View style={styles.container}>
         <TextInput
+          style={styles.input}
           placeholder="email@example.com"
           value={this.state.email}
           onChangeText={(email) => this.setState({ email })}
         />
 
         <TextInput
+          style={styles.input}
           placeholder="********"
           value={this.state.password}
           secureTextEntry
@@ -127,11 +131,19 @@ export default class LoginView extends Component {
 
         <Button
           title="Login"
+          color="#7376AB"
           onPress={() => {
             this.loginButton();
             // console.log('Logged in: ', this.state.logged);
           }}
         />
+
+        <TouchableOpacity
+          style={{ backgroundColor: 'transparent' }}
+          onPress={() => this.state.navigation.navigate('Sign Up')}
+        >
+          <Text style={{ color: 'blue' }}>Don't have an account?</Text>
+        </TouchableOpacity>
 
         <Text style={{ color: 'red' }}>{this.state.error}</Text>
       </View>
