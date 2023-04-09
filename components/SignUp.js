@@ -14,6 +14,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  input: {
+    backgroundColor: 'white',
+    margin: '5px',
+  },
 });
 export default class SignUpView extends Component {
   constructor(props) {
@@ -99,31 +103,35 @@ export default class SignUpView extends Component {
     return (
       <View style={styles.container}>
         <TextInput
+          style={styles.input}
           placeholder="First Name"
           value={this.state.firstName}
           onChangeText={(firstName) => this.setState({ firstName })}
         />
 
         <TextInput
+          style={styles.input}
           placeholder="Last Name"
           value={this.state.lastName}
           onChangeText={(lastName) => this.setState({ lastName })}
         />
 
         <TextInput
+          style={styles.input}
           placeholder="email@example.com"
           value={this.state.email}
           onChangeText={(email) => this.setState({ email })}
         />
 
         <TextInput
+          style={styles.input}
           placeholder="********"
           value={this.state.password}
           secureTextEntry
           onChangeText={(password) => this.setState({ password })}
         />
 
-        <Button title="Sign Up" onPress={this.signUp} />
+        <Button title="Sign Up" color="#7376AB" onPress={this.signUp} />
 
         <Text style={{ color: 'red' }}>{this.state.error}</Text>
       </View>

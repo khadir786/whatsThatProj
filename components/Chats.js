@@ -6,14 +6,17 @@ import {
   View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { set } from 'react-hook-form';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7EBEC',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input: {
+    backgroundColor: 'white',
+    margin: '5px',
   },
 });
 
@@ -103,21 +106,22 @@ export default class ChatsView extends Component {
           title="Logout"
           onPress={() => this.logout()}
         />
-
-        <ScrollView>
-          <View style={styles.container}>
-            <FlatList
-              data={this.state.chatData}
-              renderItem={({ item }) => (
-                <View style={styles.listItem}>
-                  <Text>{item.item_name}</Text>
-                </View>
-              )}
-              keyExtractor={({ id }, index) => id}
-            />
-          </View>
-          <View><Text>Chats Screen</Text></View>
-        </ScrollView>
+        <View style={styles.container}>
+          <ScrollView>
+            <View>
+              <FlatList
+                data={this.state.chatData}
+                renderItem={({ item }) => (
+                  <View style={styles.listItem}>
+                    <Text>{item.item_name}</Text>
+                  </View>
+                )}
+                keyExtractor={({ id }, index) => id}
+              />
+            </View>
+            <View><Text>Chats Screen</Text></View>
+          </ScrollView>
+        </View>
 
       </>
     );

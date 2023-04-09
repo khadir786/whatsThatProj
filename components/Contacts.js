@@ -10,9 +10,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7EBEC',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input: {
+    backgroundColor: 'white',
+    margin: '5px',
   },
 });
 
@@ -112,9 +116,8 @@ export default class ContactsView extends Component {
             )}
             keyExtractor={(item) => item.user_id.toString()}
           />
-
+          <View><Text>Contacts Screen</Text></View>
         </View>
-        <View><Text>Contacts Screen</Text></View>
       </>
     );
   }

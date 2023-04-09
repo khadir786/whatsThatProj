@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable react/destructuring-assignment */
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'white',
-    margin: '10px',
+    margin: '5px',
   },
 });
 
@@ -129,20 +130,13 @@ export default class LoginView extends Component {
           onChangeText={(password) => this.setState({ password })}
         />
 
-        <Button
-          title="Login"
-          color="#7376AB"
-          onPress={() => {
-            this.loginButton();
-            // console.log('Logged in: ', this.state.logged);
-          }}
-        />
+        <Button title="Login" color="#7376AB" onPress={this.loginButton} />
 
         <TouchableOpacity
           style={{ backgroundColor: 'transparent' }}
           onPress={() => this.state.navigation.navigate('Sign Up')}
         >
-          <Text style={{ color: 'blue' }}>Don't have an account?</Text>
+          <Text style={{ color: '#7376AB' }}>Don't have an account?</Text>
         </TouchableOpacity>
 
         <Text style={{ color: 'red' }}>{this.state.error}</Text>
