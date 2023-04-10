@@ -33,7 +33,7 @@ export default class SignUpView extends Component {
     };
   }
 
-  adduser = () => {
+  addUser = () => {
     const toSend = {
       first_name: this.state.firstName,
       last_name: this.state.lastName,
@@ -87,7 +87,7 @@ export default class SignUpView extends Component {
     } else {
       Alert.alert('Login', `Email: ${this.state.email}\nPassword: ${this.state.password}`);
       console.log('First Name', this.state.firstName, 'Last Name', this.state.lastName, 'Email', this.state.email, 'Password', this.state.password);
-      this.adduser();
+      this.addUser();
     }
   };
 
