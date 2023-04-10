@@ -35,9 +35,14 @@ export default class MenuView extends Component {
     this.props.navigation.navigate('Blocked');
   };
 
-  newConvo = () => {
+  goConvo = () => {
     this.setState({ menuVisible: false });
     this.props.navigation.navigate('New Convo');
+  };
+
+  goUserInfo = () => {
+    this.setState({ menuVisible: false });
+    this.props.navigation.navigate('Account Information');
   };
 
   async logout() {
@@ -87,8 +92,9 @@ export default class MenuView extends Component {
         )}
         onRequestClose={() => this.setState({ menuVisible: false })}
       >
-        <MenuItem onPress={this.newConvo}>New Conversation</MenuItem>
+        <MenuItem onPress={this.goConvo}>New Conversation</MenuItem>
         <MenuItem onPress={this.goBlocked}>Blocked</MenuItem>
+        <MenuItem onPress={this.goUserInfo}>Account Information</MenuItem>
         <MenuItem disabled>Disabled item</MenuItem>
         <MenuDivider />
         <MenuItem onPress={this.logout}>Logout</MenuItem>

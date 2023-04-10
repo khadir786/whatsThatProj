@@ -28,8 +28,6 @@ export default class NewConvoView extends Component {
   componentDidMount() {
   }
 
-
-
   render() {
     return (
       <View style={styles.container}>
