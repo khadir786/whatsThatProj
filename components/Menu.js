@@ -5,7 +5,12 @@ import {
 } from 'react-native';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import MainNav from './MainNav';
+import BlockedView from './Blocked';
+
+const MenuStack = createNativeStackNavigator();
 export default class MenuView extends Component {
   constructor(props) {
     super(props);
@@ -22,10 +27,21 @@ export default class MenuView extends Component {
 
   handleMenuItemPress = () => {
     this.setState({ menuVisible: false });
-    // handle the selected menu item here
+    this.props.navigation.navigate('Blocked');
+  };
+
+  goBlocked = () => {
+    this.setState({ menuVisible: false });
+    this.props.navigation.navigate('Blocked');
+  };
+
+  newConvo = () => {
+    this.setState({ menuVisible: false });
+    this.props.navigation.navigate('New Convo');
   };
 
   async logout() {
+    this.setState({ menuVisible: false });
     console.log('Logout');
     return fetch('http://localhost:3333/api/1.0.0/logout', {
       method:
@@ -68,11 +84,11 @@ export default class MenuView extends Component {
               source={require('../assets/dots.png')}
             />
           </TouchableOpacity>
-)}
+        )}
         onRequestClose={() => this.setState({ menuVisible: false })}
       >
-        <MenuItem onPress={this.handleMenuItemPress}>Menu item 1</MenuItem>
-        <MenuItem onPress={this.handleMenuItemPress}>Menu item 2</MenuItem>
+        <MenuItem onPress={this.newConvo}>New Conversation</MenuItem>
+        <MenuItem onPress={this.goBlocked}>Blocked</MenuItem>
         <MenuItem disabled>Disabled item</MenuItem>
         <MenuDivider />
         <MenuItem onPress={this.logout}>Logout</MenuItem>

@@ -1,12 +1,8 @@
-/* eslint-disable no-console */
-/* eslint-disable prefer-regex-literals */
-/* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Text, Button, ActivityIndicator, FlatList,
+  Text, TextInput, View, Button, Alert, FlatList, ScrollView, StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,31 +17,20 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ContactsView extends Component {
+export default class BlockedView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: true,
-      contactsData: [],
-      // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
+      blockedData: [],
     };
   }
 
   componentDidMount() {
-    this.setState({ isLoading: false });
-    this.unsubscribe = this.state.navigation.addListener('focus', () => {
-      this.getContacts();
-    });
-    console.log('test');
+    this.getBlocked();
   }
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  async getContacts() {
-    return fetch('http://localhost:3333/api/1.0.0/contacts/', {
+  async getBlocked() {
+    return fetch('http://localhost:3333/api/1.0.0/blocked/', {
       headers: {
         'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
       },
@@ -54,7 +39,7 @@ export default class ContactsView extends Component {
       .then((responseJson) => {
         this.setState({
           // isLoading: false,
-          contactsData: responseJson,
+          blockedData: responseJson,
         });
       })
       .catch((error) => {
@@ -63,20 +48,12 @@ export default class ContactsView extends Component {
   }
 
   render() {
-    if (this.state.isLoading) {
-      return (
-        <View style={styles.container}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
     return (
       <View style={styles.container}>
-        <View><Text>Contacts Screen</Text></View>
+        <View><Text>Blocked Users</Text></View>
         <ScrollView>
           <FlatList
-            data={this.state.contactsData}
+            data={this.state.blockedData}
             renderItem={({ item }) => (
               <View style={styles.listItem}>
                 <Text>{item.first_name}</Text>

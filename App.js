@@ -8,6 +8,8 @@ import Home from './components/Home';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
 import MainNav from './components/MainNav';
+import BlockedView from './components/Blocked';
+import NewConvoView from './components/NewConvo';
 
 const AuthStack = createNativeStackNavigator();
 
@@ -30,7 +32,11 @@ export default class App extends Component {
               headerShown: false,
             }}
           />
-          <AuthStack.Screen name="Login" component={LoginView} />
+          <AuthStack.Screen
+            name="Login"
+            component={LoginView}
+            options={{ headerShown: false }}
+          />
           <AuthStack.Screen name="Sign Up" component={SignUpView} />
           <AuthStack.Screen
             name="MainApp"
@@ -39,6 +45,8 @@ export default class App extends Component {
               headerShown: false,
             }}
           />
+          <AuthStack.Screen name="Blocked" component={BlockedView} />
+          <AuthStack.Screen name="New Convo" component={NewConvoView} />
         </AuthStack.Navigator>
       </NavigationContainer>
     );

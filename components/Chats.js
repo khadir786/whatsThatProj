@@ -61,35 +61,6 @@ export default class ChatsView extends Component {
     return false;
   };
 
-  async logout() {
-    console.log('Logout');
-    return fetch('http://localhost:3333/api/1.0.0/logout', {
-      method:
-        'POST',
-      headers: {
-        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
-      },
-    })
-      .then(async (response) => {
-        if (response.status === 200) {
-          await AsyncStorage.removeItem('whatsthat_session_token');
-          await AsyncStorage.removeItem('whatsthat_user_id');
-          this.state.navigation.navigate('Login');
-        } else if (response.status === 401) {
-          console.log('Unauthorised');
-          await AsyncStorage.removeItem('whatsthat_session_token');
-          await AsyncStorage.removeItem('whatsthat_user_id');
-          this.state.navigation.navigate('Login');
-        } else {
-          throw console.log('something went wrong...');
-        }
-      })
-      .catch((error) => {
-        // this.setState({ error: error });
-        console.log(error);
-      });
-  }
-
   render() {
     if (this.state.isLoading) {
       return (
@@ -100,32 +71,23 @@ export default class ChatsView extends Component {
     }
 
     return (
-      <>
-
-        <Button
-          title="Logout"
-          onPress={() => this.logout()}
-        />
-        <View style={styles.container}>
-          <ScrollView>
-            <View>
-              <FlatList
-                data={this.state.chatData}
-                renderItem={({ item }) => (
-                  <View style={styles.listItem}>
-                    <Text>{item.item_name}</Text>
-                  </View>
-                )}
-                keyExtractor={({ id }, index) => id}
-              />
-            </View>
-            <View><Text>Chats Screen</Text></View>
-          </ScrollView>
-        </View>
-
-      </>
+      <View style={styles.container}>
+        <ScrollView>
+          <View>
+            <FlatList
+              data={this.state.chatData}
+              renderItem={({ item }) => (
+                <View style={styles.listItem}>
+                  <Text>{item.name}</Text>
+                  <Text>{item.last_message.message}</Text>
+                </View>
+              )}
+              keyExtractor={({ id }, index) => id}
+            />
+          </View>
+          <View><Text>Chats Screen</Text></View>
+        </ScrollView>
+      </View>
     );
   }
 }
-
-// use tab navigation for chats, contacts
