@@ -114,15 +114,20 @@ export default class ContactsView extends Component {
     } catch (error) { console.log(error); }
   }
 
-  async deleteContact() {
+  async deleteContact(id) {
     try {
-      const id = await AsyncStorage.getItem('whatsthat_user_id');
+      console.log(id);
       const response = await fetch(`http://localhost:3333/api/1.0.0/user/${id}/contact/`, {
         method: 'DELETE',
-        header: {
+        headers: {
           'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
         },
       });
+      if (response.status === 200) {
+        this.getContacts();
+      } else if (response.status === 400) {
+        console.log("You can't remove yourself as a contact");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -240,6 +245,7 @@ export default class ContactsView extends Component {
                 onPress={() => {
                   console.log(`Delete contact ${selectedItem?.first_name}`);
                   this.setState({ selectedItem: null });
+                  this.deleteContact(selectedItem.user_id);
                 }}
               >
                 <Text style={styles.modalButtonText}>Delete Contact</Text>
