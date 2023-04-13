@@ -21,10 +21,7 @@ export default class App extends Component {
       <NavigationContainer>
         <AuthStack.Navigator
           initialRouteName="Home"
-          screenOptions={{
-            animationEnabled: true,
-            animationTypeForReplace: 'slide',
-          }}
+
         >
           <AuthStack.Screen
             name="Home"
