@@ -61,7 +61,7 @@ export default class ContactsView extends Component {
     this.state = {
       isLoading: true,
       contactsData: [],
-      isModalVisible: false,
+      isModalVisible: null,
       newContactID: '',
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
@@ -140,40 +140,6 @@ export default class ContactsView extends Component {
     }));
   }
 
-  renderModal() {
-    return (
-      <Modal
-        animationType="fade"
-        transparent
-        visible={this.state.isModalVisible}
-        onRequestClose={() => this.toggleModal()}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter contact ID"
-              onChangeText={(text) => this.setState({ newContactID: text })}
-              value={this.state.newContactID}
-            />
-            <TouchableHighlight
-              style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
-              onPress={() => this.addContact()}
-            >
-              <Text style={styles.modalButtonText}>Add</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={[styles.modalButton, { backgroundColor: 'gray' }]}
-              onPress={() => this.toggleModal()}
-            >
-              <Text style={styles.modalButtonText}>Cancel</Text>
-            </TouchableHighlight>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
   render() {
     const {
       isLoading,
@@ -190,12 +156,38 @@ export default class ContactsView extends Component {
       );
     }
 
-    if (isModalVisible) {
-      return this.renderModal();
-    }
-
     return (
+
       <View style={styles.container}>
+        <Modal
+          animationType="fade"
+          transparent
+          visible={!!isModalVisible} // converts truthy to true and falsy to false
+          onRequestClose={() => this.setState({ isModalVisible: null })}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter contact ID"
+                onChangeText={(text) => this.setState({ newContactID: text })}
+                value={this.state.newContactID}
+              />
+              <TouchableHighlight
+                style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
+                onPress={() => this.addContact()}
+              >
+                <Text style={styles.modalButtonText}>Add</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={[styles.modalButton, { backgroundColor: 'gray' }]}
+                onPress={() => this.toggleModal()}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
         <FlatList
           data={contactsData}
           keyExtractor={(item) => item.user_id.toString()}
