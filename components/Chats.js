@@ -25,7 +25,6 @@ export default class ChatsView extends Component {
     this.state = {
       isLoading: true,
       chatData: [],
-      error: '',
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
     };
