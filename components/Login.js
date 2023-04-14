@@ -4,23 +4,11 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, Alert, ActivityIndicator, TouchableOpacity,
+  View, TextInput, Text, Button, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7EBEC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    backgroundColor: 'white',
-    margin: 5,
-  },
-});
+import { styles } from './stylesheets';
 
 export default class LoginView extends Component {
   constructor(props) {

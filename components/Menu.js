@@ -6,6 +6,8 @@ import {
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { styles } from './stylesheets';
+
 
 import MainNav from './MainNav';
 import BlockedView from './Blocked';

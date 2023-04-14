@@ -1,21 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Text, TextInput, View, Button, Alert, FlatList, ScrollView, StyleSheet, ActivityIndicator,
+  Text, TextInput, View, Button, FlatList, ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7EBEC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    backgroundColor: 'white',
-    margin: '5px',
-  },
-});
+import { styles } from './stylesheets';
 
 export default class UserInfoView extends Component {
   constructor(props) {

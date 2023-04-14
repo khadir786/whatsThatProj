@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Text, View, StyleSheet, Button,
+  Text, View, Button,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7EBEC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+import { styles } from './stylesheets';
 
 class Home extends Component {
   static navigationOptions = {

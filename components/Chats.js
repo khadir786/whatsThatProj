@@ -3,9 +3,8 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, ActivityIndicator, FlatList, ScrollView,
+  View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,7 +33,6 @@ export default class ChatsView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
-    this.setState({ token: this.checkLogged() });
   }
 
   getChats() {
@@ -51,15 +49,6 @@ export default class ChatsView extends Component {
         console.log(error);
       });
   }
-
-  checkLogged = async () => {
-    // change var name 'token' for security
-    const token = await AsyncStorage.getItem('whatsthat_session_token');
-    if (token != null) {
-      return true;
-    }
-    return false;
-  };
 
   render() {
     if (this.state.isLoading) {

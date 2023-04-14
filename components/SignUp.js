@@ -3,22 +3,11 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TextInput, Text, Button, Alert, ActivityIndicator,
+  View, TextInput, Text, Button, Alert, ActivityIndicator,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
+import { styles } from './stylesheets';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7EBEC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    backgroundColor: 'white',
-    margin: '5px',
-  },
-});
 export default class SignUpView extends Component {
   constructor(props) {
     super(props);
