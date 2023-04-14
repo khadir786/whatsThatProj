@@ -106,7 +106,7 @@ export default class ContactsView extends Component {
         },
       });
       if (response.status === 200) {
-        this.toggleModal();
+        this.setState({ isModalVisible: null });
         this.getContacts();
       } else if (response.status === 400) {
         console.log("You can't add yourself as a contact");
@@ -131,13 +131,6 @@ export default class ContactsView extends Component {
     } catch (error) {
       console.log(error);
     }
-  }
-
-  toggleModal() {
-    const curState = this.state.isModalVisible;
-    this.setState(() => ({
-      isModalVisible: !curState,
-    }));
   }
 
   render() {
@@ -181,7 +174,7 @@ export default class ContactsView extends Component {
               </TouchableHighlight>
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                onPress={() => this.toggleModal()}
+                onPress={() => this.setState({ isModalVisible: null })}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
