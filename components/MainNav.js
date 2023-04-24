@@ -2,10 +2,6 @@
 import { Component, useState } from 'react';
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  View, Text, TouchableOpacity, Image,
-} from 'react-native';
-import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 
 import ChatsView from './Chats';
 import ContactsView from './Contacts';

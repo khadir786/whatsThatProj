@@ -20,6 +20,7 @@ export default class ContactsView extends Component {
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
       selectedItem: null,
+      error: '',
     };
   }
 
@@ -64,6 +65,7 @@ export default class ContactsView extends Component {
         this.getContacts();
       } else if (response.status === 400) {
         console.log("You can't add yourself as a contact");
+        this.setState({ error: "You can't add yourself as a contact" });
       }
     } catch (error) { console.log(error); }
   }
@@ -93,6 +95,7 @@ export default class ContactsView extends Component {
       contactsData,
       isModalVisible,
       selectedItem,
+      error,
     } = this.state;
 
     if (isLoading) {
@@ -120,15 +123,19 @@ export default class ContactsView extends Component {
                 onChangeText={(text) => this.setState({ newContactID: text })}
                 value={this.state.newContactID}
               />
+              <Text style={{ color: 'red' }}>{error}</Text>
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
-                onPress={() => this.addContact()}
+                onPress={() => {
+                  this.addContact();
+                  this.setState({ error: '' });
+                }}
               >
                 <Text style={styles.modalButtonText}>Add</Text>
               </TouchableHighlight>
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                onPress={() => this.setState({ isModalVisible: null })}
+                onPress={() => this.setState({ isModalVisible: null, error: '' })}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
@@ -152,6 +159,7 @@ export default class ContactsView extends Component {
           ListEmptyComponent={<Text>You have no contacts. Try adding one!</Text>}
           ListHeaderComponent={(
             <Button
+              color="#7376AB"
               title="Add Contact"
               onPress={() => this.setState({ isModalVisible: true })}
             />
