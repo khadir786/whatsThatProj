@@ -36,7 +36,7 @@ export default class NewConvoView extends Component {
     } catch (error) { console.log(error); }
   }
 
-  async newConvo(convoName) {
+  async newConvo(convoName, members) {
     try {
       const toSend = { name: convoName };
       const response = await fetch('http://localhost:3333/api/1.0.0/chat/', {
@@ -50,13 +50,14 @@ export default class NewConvoView extends Component {
       if (response.status === 201) {
         const convoDetails = await response.json();
         console.log(`Conversation ID: ${convoDetails.chat_id}`);
-        return convoDetails.chat_id;
+        members.forEach((member) => {
+          this.addMember(member.user_id, convoDetails.chat_id);
+        });
       }
     } catch (error) {
       console.log(error);
       console.log(convoName);
     }
-    return null;
   }
 
   async addMember(memberID, chatID) {
@@ -68,7 +69,7 @@ export default class NewConvoView extends Component {
         },
       });
       if (response.status === 200) {
-        console.log(`Added members with ID: ${chatID}`);
+        console.log(`Added members with ID: ${memberID}`);
       }
     } catch (error) {
       console.log(error);
@@ -111,11 +112,7 @@ export default class NewConvoView extends Component {
                 <TouchableHighlight
                   style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                   onPress={() => {
-                    const chatID = this.newConvo(this.state.convoTitle);
-                    this.state.convoMembers.forEach((member) => {
-                      this.addMember(member.user_id, chatID);
-                      console.log(member.user_id);
-                    });
+                    this.newConvo(this.state.convoTitle, convoMembers);
                   }}
                 >
                   <Text style={styles.modalButtonText}>Add</Text>
