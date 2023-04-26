@@ -3,14 +3,14 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// eslint-disable-next-line import/no-cycle
-import Home from './components/Home';
+import Home from './components/home';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
 import MainNav from './components/MainNav';
 import BlockedView from './components/Blocked';
 import NewConvoView from './components/NewConvo';
 import UserInfoView from './components/UserInfo';
+import ChatView from './components/Chat';
 
 const AuthStack = createNativeStackNavigator();
 
@@ -46,6 +46,7 @@ export default class App extends Component {
           <AuthStack.Screen name="Blocked" component={BlockedView} />
           <AuthStack.Screen name="New Convo" component={NewConvoView} />
           <AuthStack.Screen name="Account Information" component={UserInfoView} />
+          <AuthStack.Screen name="Chat" component={ChatView} />
         </AuthStack.Navigator>
       </NavigationContainer>
     );

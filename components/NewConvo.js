@@ -14,6 +14,7 @@ export default class NewConvoView extends Component {
       convoMembers: [],
       modalVisible: null,
       convoTitle: '',
+      navigation: this.props,
     };
   }
 
@@ -53,6 +54,7 @@ export default class NewConvoView extends Component {
         members.forEach((member) => {
           this.addMember(member.user_id, convoDetails.chat_id);
         });
+        navigation.navigate('Chat', convoDetails.chat_id);
       }
     } catch (error) {
       console.log(error);

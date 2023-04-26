@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
 import {
-  Text, TextInput, View, Button, Alert,
+  Text, View,
 } from 'react-native';
 
 class Message extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: '',
-      sender: '',
-    };
-  }
-
   render() {
+    const { message, sender } = this.props;
     return (
       <View>
         <Text>{this.sender}</Text>
@@ -21,3 +14,5 @@ class Message extends Component {
     );
   }
 }
+
+export default Message;

@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import {
   View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,21 +33,21 @@ export default class ChatsView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
+    this.getChats();
   }
 
-  getChats() {
-    // return fetch('http://10.0.2.2:3333/list')
-    return fetch('http://localhost:3333/api/1.0.0/chat/')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          isLoading: false,
-          chatData: responseJson,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+  async getChats() {
+    try {
+      const response = await fetch('http://localhost:3333/api/1.0.0/chat/', {
+        headers: {
+          'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+        },
       });
+      if (response.status === 200) {
+        const chats = await response.json();
+        this.setState({ chatData: chats });
+      }
+    } catch (error) { console.log(error); }
   }
 
   render() {
@@ -62,6 +63,7 @@ export default class ChatsView extends Component {
       <View style={styles.container}>
         <ScrollView>
           <View>
+            <View><Text>Chats Screen</Text></View>
             <FlatList
               data={this.state.chatData}
               renderItem={({ item }) => (
@@ -70,10 +72,9 @@ export default class ChatsView extends Component {
                   <Text>{item.last_message.message}</Text>
                 </View>
               )}
-              keyExtractor={({ id }, index) => id}
+              keyExtractor={(item) => item.chat_id.toString()}
             />
           </View>
-          <View><Text>Chats Screen</Text></View>
         </ScrollView>
       </View>
     );
