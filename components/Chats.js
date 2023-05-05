@@ -6,19 +6,7 @@ import {
   View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView, TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7EBEC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    backgroundColor: 'white',
-    margin: '5px',
-  },
-});
+import { styles } from './stylesheets';
 
 export default class ChatsView extends Component {
   constructor(props) {
@@ -67,17 +55,16 @@ export default class ChatsView extends Component {
     }
 
     return (
-      <View style={styles.container}>
+      <View style={styles.tabContainer}>
         <ScrollView>
           <View>
-            <View><Text>Chats Screen</Text></View>
-          </View>
-          <View>
             <FlatList
+              style={styles.list}
               data={chatData}
               keyExtractor={(item) => item.chat_id.toString()}
               renderItem={({ item }) => (
                 <TouchableHighlight
+                  style={styles.listItem}
                   onPress={() => {
                     navigation.navigate('Chat', {
                       title: item.name,
@@ -86,7 +73,7 @@ export default class ChatsView extends Component {
                   underlayColor="#F4E2E3"
                 >
                   <View style={styles.listItem}>
-                    <Text>{item.name}</Text>
+                    <Text style={styles.messageTitle}>{item.name}</Text>
                     <Text>{item.last_message.message}</Text>
                   </View>
                 </TouchableHighlight>

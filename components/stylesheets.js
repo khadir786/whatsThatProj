@@ -14,10 +14,19 @@ export const styles = StyleSheet.create({
     backgroundColor: 'white',
     margin: '5px',
   },
+  tabContainer: {
+    flex: 1,
+    backgroundColor: '#F7EBEC',
+    width: '100%',
+  },
+  list: {
+    width: '100%',
+  },
   listItem: {
+    // borderWidth: 1,
+    // borderColor: '#ccc',
     padding: 10,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
+    width: '100%',
   },
   modalContainer: {
     flex: 1,
@@ -46,6 +55,10 @@ export const styles = StyleSheet.create({
   modalButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  messageTitle: {
+    fontWeight: 'bold',
+    color: 'rgb(166, 135, 135)',
   },
   inputContainer: {
     flexDirection: 'row',
