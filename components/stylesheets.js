@@ -60,6 +60,10 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'rgb(166, 135, 135)',
   },
+  contactText: {
+    fontWeight: 'bold',
+    color: 'rgb(166, 135, 135)',
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -68,6 +72,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 5,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
+    width: '100%',
   },
   inputMessage: {
     flex: 1,
@@ -77,5 +82,10 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
+  },
+  chatContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
 });

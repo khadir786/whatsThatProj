@@ -107,7 +107,7 @@ export default class ContactsView extends Component {
 
     return (
 
-      <View style={styles.container}>
+      <View style={styles.tabContainer}>
         <Modal
           animationType="fade"
           transparent
@@ -146,13 +146,17 @@ export default class ContactsView extends Component {
           keyExtractor={(item) => item.user_id.toString()}
           renderItem={({ item }) => (
             <TouchableHighlight
+              style={styles.listItem}
               onPress={() => this.setState({ selectedItem: item })}
               underlayColor="#F4E2E3"
             >
               <View style={styles.listItem}>
-                <Text>{item.first_name}</Text>
-                <Text>{item.last_name}</Text>
-                <Text>{item.email}</Text>
+                <Text style={styles.contactText}>
+                  {item.first_name}
+                  {' '}
+                  {item.last_name}
+                </Text>
+                <Text style={{ fontWeight: '200' }}>{item.email}</Text>
               </View>
             </TouchableHighlight>
           )}
