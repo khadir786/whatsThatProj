@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
-/* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
@@ -148,6 +147,7 @@ export default class ContactsView extends Component {
           renderItem={({ item }) => (
             <TouchableHighlight
               onPress={() => this.setState({ selectedItem: item })}
+              underlayColor="#F4E2E3"
             >
               <View style={styles.listItem}>
                 <Text>{item.first_name}</Text>

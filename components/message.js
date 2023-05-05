@@ -9,7 +9,7 @@ class Message extends Component {
     return (
       <View>
         <Text>{this.sender}</Text>
-        <Text>{this.props.message}</Text>
+        <Text>{this.message}</Text>
       </View>
     );
   }

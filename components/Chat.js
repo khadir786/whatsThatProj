@@ -24,8 +24,10 @@ export default class ChatView extends Component {
   componentDidMount() {
     this.setState({ isLoading: false });
     this.unsubscribe = this.state.navigation.addListener('focus', () => {
-      // this.getContacts();
+      // this.getchatData();
     });
+    const { navigation, route } = this.props;
+    navigation.setOptions({ title: route.params.title });
     console.log('This is the chat screen');
   }
 
@@ -36,11 +38,11 @@ export default class ChatView extends Component {
   render() {
     const {
       isLoading,
-      contactsData,
-      isModalVisible,
       selectedItem,
       error,
     } = this.state;
+
+    const { chatDetails } = this.props.route.params;
 
     if (isLoading) {
       return (
@@ -51,9 +53,24 @@ export default class ChatView extends Component {
     }
 
     return (
-
       <View style={styles.container}>
-        <Text>This is a group chat screen</Text>
+        <View style={styles.chatContainer}>
+          {/* render chat messages */}
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputMessage}
+            placeholder="Type a message"
+            onChangeText={(text) => this.setState({ text })}
+            value={this.state.text}
+          />
+          <Button
+            title="Send"
+            onPress={() => {
+              // handle sending message logic
+            }}
+          />
+        </View>
       </View>
     );
   }

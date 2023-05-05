@@ -47,4 +47,22 @@ export const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  inputMessage: {
+    flex: 1,
+    marginRight: 10,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
 });

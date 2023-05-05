@@ -3,7 +3,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView,
+  View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView, TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -28,6 +28,7 @@ export default class ChatsView extends Component {
       chatData: [],
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
+      selectedItem: null,
     };
   }
 
@@ -51,7 +52,13 @@ export default class ChatsView extends Component {
   }
 
   render() {
-    if (this.state.isLoading) {
+    const {
+      chatData,
+      navigation,
+      isLoading,
+      selectedItem,
+    } = this.state;
+    if (isLoading) {
       return (
         <View style={styles.container}>
           <ActivityIndicator />
@@ -64,15 +71,30 @@ export default class ChatsView extends Component {
         <ScrollView>
           <View>
             <View><Text>Chats Screen</Text></View>
+          </View>
+          <View>
             <FlatList
-              data={this.state.chatData}
-              renderItem={({ item }) => (
-                <View style={styles.listItem}>
-                  <Text>{item.name}</Text>
-                  <Text>{item.last_message.message}</Text>
-                </View>
-              )}
+              data={chatData}
               keyExtractor={(item) => item.chat_id.toString()}
+              renderItem={({ item }) => (
+                <TouchableHighlight
+                  onPress={() => {
+                    navigation.navigate('Chat', {
+                      title: item.name,
+                    });
+                  }}
+                  underlayColor="#F4E2E3"
+                >
+                  <View style={styles.listItem}>
+                    <Text>{item.name}</Text>
+                    <Text>{item.last_message.message}</Text>
+                  </View>
+                </TouchableHighlight>
+              )}
+              ListEmptyComponent={<Text>No conversations. Try creating one in the menu</Text>}
+              ListHeaderComponent={(
+                <View />
+          )}
             />
           </View>
         </ScrollView>
