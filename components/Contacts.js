@@ -25,10 +25,11 @@ export default class ContactsView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
+    this.getContacts();
     this.unsubscribe = this.state.navigation.addListener('focus', () => {
       this.getContacts();
+      console.log('Contacts Screen');
     });
-    console.log('test');
   }
 
   componentWillUnmount() {

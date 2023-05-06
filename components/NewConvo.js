@@ -94,7 +94,7 @@ export default class NewConvoView extends Component {
     const isButtonVisible = convoMembers.length > 0; // check if at least one contact is selected
     return (
 
-      <View style={styles.container}>
+      <View style={styles.tabContainer}>
         <View>
           <Modal
             animationType="fade"
@@ -155,6 +155,7 @@ export default class NewConvoView extends Component {
             const isSelected = index !== -1; // boolean: true if index is not -1
             return (
               <TouchableHighlight
+                style={styles.listItem}
                 onPress={() => {
                   const updatedMembers = [...convoMembers];
                   if (isSelected) {
@@ -166,11 +167,15 @@ export default class NewConvoView extends Component {
                     console.log(this.state.convoMembers); // callback after state update
                   });
                 }}
+                underlayColor="#F4E2E3"
               >
-                <View style={[styles.listItem, isSelected && { backgroundColor: 'lightgrey' }]}>
-                  <Text>{item.first_name}</Text>
-                  <Text>{item.last_name}</Text>
-                  <Text>{item.email}</Text>
+                <View style={[styles.listItem, isSelected && { backgroundColor: '#E8C5C8' }]}>
+                  <Text style={styles.contactText}>
+                    {item.first_name}
+                    {' '}
+                    {item.last_name}
+                  </Text>
+                  <Text style={{ fontWeight: '200' }}>{item.email}</Text>
                 </View>
               </TouchableHighlight>
             );

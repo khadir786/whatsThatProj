@@ -9,7 +9,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { styles } from './stylesheets';
 
 import MainNav from './MainNav';
-import BlockedView from './Blocked';
 
 const MenuStack = createNativeStackNavigator();
 export default class MenuView extends Component {
@@ -22,13 +21,15 @@ export default class MenuView extends Component {
     this.logout = this.logout.bind(this);
   }
 
-  handleMenuToggle = () => {
-    this.setState({ menuVisible: !this.state.menuVisible });
+  makeMenuVisible = () => {
+    if (!this.state.menuVisible) {
+      this.setState({ menuVisible: true });
+      console.log(`Menu Visible: ${this.state.menuVisible}`);
+    }
   };
 
-  handleMenuItemPress = () => {
+  makeMenuHidden = () => {
     this.setState({ menuVisible: false });
-    this.props.navigation.navigate('Blocked');
   };
 
   goBlocked = () => {
@@ -81,7 +82,7 @@ export default class MenuView extends Component {
       <Menu
         visible={this.state.menuVisible}
         anchor={(
-          <TouchableOpacity onPress={this.handleMenuToggle}>
+          <TouchableOpacity onPress={this.makeMenuVisible}>
             <Image
               style={{
                 height: 25,
@@ -91,12 +92,18 @@ export default class MenuView extends Component {
             />
           </TouchableOpacity>
         )}
-        onRequestClose={() => this.setState({ menuVisible: false })}
+        onRequestClose={() => {
+          console.log('Menu closed');
+          this.makeMenuHidden();
+          console.log(`Menu Visible: ${this.state.menuVisible}`);
+        }}
+
+        onWheel={(e) => e.preventDefault()}
+        onTouchMove={(e) => e.preventDefault()}
       >
         <MenuItem onPress={this.goConvo}>New Conversation</MenuItem>
         <MenuItem onPress={this.goBlocked}>Blocked</MenuItem>
         <MenuItem onPress={this.goUserInfo}>Account Information</MenuItem>
-        <MenuItem disabled>Disabled item</MenuItem>
         <MenuDivider />
         <MenuItem onPress={this.logout}>Logout</MenuItem>
       </Menu>

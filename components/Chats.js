@@ -23,6 +23,14 @@ export default class ChatsView extends Component {
   componentDidMount() {
     this.setState({ isLoading: false });
     this.getChats();
+    this.unsubscribe = this.state.navigation.addListener('focus', () => {
+      this.getChats();
+      console.log('Chat List Screen');
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   async getChats() {
