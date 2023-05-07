@@ -11,6 +11,7 @@ import NewConvoView from './components/NewConvo';
 import UserInfoView from './components/UserInfo';
 import ChatsView from './components/Chats';
 import ChatView from './components/Chat';
+import TabNav from './components/TabNav';
 
 const AuthStack = createNativeStackNavigator();
 
@@ -26,7 +27,7 @@ export default class App extends Component {
           <AuthStack.Screen name="Blocked" component={BlockedView} />
           <AuthStack.Screen name="New Convo" component={NewConvoView} />
           <AuthStack.Screen name="Account Information" component={UserInfoView} />
-          <AuthStack.Screen name="Chats" component={ChatsView} options={{ headerShown: true }} />
+          <AuthStack.Screen name="Chats" component={ChatsView} options={{ headerShown: false }} />
           <AuthStack.Screen name="Chat" component={ChatView} options={{ headerShown: true }} />
         </AuthStack.Navigator>
       </NavigationContainer>

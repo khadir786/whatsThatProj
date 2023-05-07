@@ -1,23 +1,17 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import ChatsView from './Chats';
 import ContactsView from './Contacts';
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class TabNav extends Component {
   render() {
     return (
-      <Tab.Navigator
-        tabBarOptions={{
-          activeTintColor: '#f0edf6',
-          inactiveTintColor: '#3e2465',
-          style: { backgroundColor: '#694fad' },
-        }}
-      >
+      <Tab.Navigator>
         <Tab.Screen
           name="Chats"
           component={ChatsView}

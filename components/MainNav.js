@@ -1,10 +1,14 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+} from '@react-navigation/drawer';
 
 import TabNav from './TabNav';
 import UserInfoView from './UserInfo';
 import BlockedView from './Blocked';
+import NewConvoView from './NewConvo';
+import LogoutButton from './LogoutButton';
 
 const Drawer = createDrawerNavigator();
 
@@ -12,7 +16,7 @@ const Drawer = createDrawerNavigator();
 export default class MainNav extends Component {
   render() {
     return (
-      <Drawer.Navigator initialRouteName="MainApp">
+      <Drawer.Navigator drawerContent={(props) => <LogoutButton {...props} />}>
         <Drawer.Screen
           name="MainApp"
           component={TabNav}
@@ -27,6 +31,11 @@ export default class MainNav extends Component {
           name="Blocked"
           component={BlockedView}
           options={{ drawerLabel: 'Blocked' }}
+        />
+        <Drawer.Screen
+          name="New Conversation"
+          component={NewConvoView}
+          options={{ drawerLabel: 'New Conversation' }}
         />
       </Drawer.Navigator>
     );
