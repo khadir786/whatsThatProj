@@ -22,11 +22,13 @@ export default class LogoutButton extends Component {
       if (response.status === 200) {
         await AsyncStorage.removeItem('whatsthat_session_token');
         await AsyncStorage.removeItem('whatsthat_user_id');
+        this.props.navigation.closeDrawer();
         this.props.navigation.navigate('Login');
       } else if (response.status === 401) {
         console.log('Unauthorised');
         await AsyncStorage.removeItem('whatsthat_session_token');
         await AsyncStorage.removeItem('whatsthat_user_id');
+        this.props.navigation.closeDrawer();
         this.props.navigation.navigate('Login');
       } else {
         throw new Error('Something went wrong...');
