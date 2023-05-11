@@ -7,6 +7,7 @@ import {
   View, TextInput, Text, Button, ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
+import crypto from 'crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './stylesheets';
 
@@ -26,15 +27,24 @@ export default class LoginView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
+    this.setState({ error: '' });
     console.log('Logged in: ', this.state.logged);
     console.log(AsyncStorage.getItem('whatsthat_user_id'));
     console.log(AsyncStorage.getItem('whatsthat_session_token'));
   }
 
-  login = () => {
+  hashPassword = (password, salt) => {
+    let hash = crypto.pbkdf2Sync(password, salt, 100000, 256, 'sha256').toString('hex');
+    hash += 'p1L!ow';
+    // Sanitise hash
+    return hash.replace(/[^a-zA-Z0-9!@#$%^&*]/g, '');
+  };
+
+  login = async () => {
+    const pass = this.hashPassword(this.state.password, 'SavourySalt');
     const toSend = {
       email: this.state.email,
-      password: this.state.password,
+      password: pass,
     };
 
     return fetch('http://localhost:3333/api/1.0.0/login/', {
@@ -45,6 +55,7 @@ export default class LoginView extends Component {
       body: JSON.stringify(toSend),
     })
       .then(async (response) => {
+        this.setState({ isLoading: false });
         if (response.status === 200) {
           console.log(response);
           try {
@@ -63,6 +74,7 @@ export default class LoginView extends Component {
         } else if (response.status === 400) {
           this.setState({ error: 'Invalid email/password' });
           console.log('Bad request - Invalid email/password supplied');
+          console.log(pass);
         }
       })
       .catch((error) => {
@@ -71,6 +83,7 @@ export default class LoginView extends Component {
   };
 
   loginButton = () => {
+    this.setState({ isLoading: true });
     // validate email and password:
     // check if email and password are not empty
     // check if email is valid

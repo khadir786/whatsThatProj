@@ -16,7 +16,10 @@ const Drawer = createDrawerNavigator();
 export default class MainNav extends Component {
   render() {
     return (
-      <Drawer.Navigator drawerContent={(props) => <LogoutButton {...props} />}>
+      <Drawer.Navigator
+        screenOptions={{ drawerActiveTintColor: '#7376AB' }}
+        drawerContent={(props) => <LogoutButton {...props} />}
+      >
         <Drawer.Screen
           name="MainApp"
           component={TabNav}

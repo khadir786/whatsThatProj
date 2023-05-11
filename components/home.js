@@ -14,8 +14,6 @@ class Home extends Component {
     super(props);
     this.state = {
       navigation: props.navigation,
-
-      // eslint-disable-next-line react/prop-types
     };
   }
 

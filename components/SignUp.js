@@ -3,9 +3,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, TextInput, Text, Button, Alert, ActivityIndicator,
+  View, TextInput, Text, Button, ActivityIndicator,
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
+import crypto from 'crypto';
 import { styles } from './stylesheets';
 
 export default class SignUpView extends Component {
@@ -22,12 +23,12 @@ export default class SignUpView extends Component {
     };
   }
 
-  addUser = () => {
+  addUser = async (hashedPassword) => {
     const toSend = {
       first_name: this.state.firstName,
       last_name: this.state.lastName,
       email: this.state.email,
-      password: this.state.password,
+      password: hashedPassword,
     };
 
     return fetch('http://localhost:3333/api/1.0.0/user/', {
@@ -39,6 +40,7 @@ export default class SignUpView extends Component {
     })
       .then((response) => {
         if (response.status === 201) {
+          this.setState({ isLoading: false });
           console.log('User added');
           console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
           console.log('Email: ', this.state.email, 'Password: ', this.state.password);
@@ -52,31 +54,61 @@ export default class SignUpView extends Component {
       });
   };
 
-  signUp = () => {
-    // validate email and password:
-    // check if email and password are not empty
-    // check if email is valid
-    // check password against regex
+  hashPassword = (password, salt) => {
+    let hash = crypto.pbkdf2Sync(password, salt, 100000, 256, 'sha256').toString('hex');
+    hash += 'p1L!ow';
+    // Sanitise hash
+    return hash.replace(/[^a-zA-Z0-9!@#$%^&*]/g, '');
+  };
+
+  validateAndHash = async (email, password, firstName, lastName) => {
     const PASSWORD_REGEX = new RegExp('^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,30}$');
     const NAME_REGEX = new RegExp("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
 
-    if (this.state.email === '' || this.state.password === '' || this.state.firstName === '' || this.state.lastName === '') {
+    if (email === '' || password === '' || firstName === '' || lastName === '') {
       this.setState({ error: 'Please fill in each field' });
-    } else if (!NAME_REGEX.test(this.state.firstName)) {
+    } else if (!NAME_REGEX.test(firstName)) {
       this.setState({ error: 'Please enter a valid first name' });
-    } else if (!NAME_REGEX.test(this.state.lastName)) {
+    } else if (!NAME_REGEX.test(lastName)) {
       this.setState({ error: 'Please enter a valid last name' });
-    } else if (!EmailValidator.validate(this.state.email)) {
+    } else if (!EmailValidator.validate(email)) {
       this.setState({ error: 'Please enter a valid email' });
-    } else if (!PASSWORD_REGEX.test(this.state.password)) {
+    } else if (!PASSWORD_REGEX.test(password)) {
       this.setState({
-        error: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character '
-               + '\n And it must be at least 8 characters long',
+        error: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character '
+          + 'and it must be at least 8 characters long',
       });
     } else {
-      Alert.alert('Login', `Email: ${this.state.email}\nPassword: ${this.state.password}`);
-      console.log('First Name', this.state.firstName, 'Last Name', this.state.lastName, 'Email', this.state.email, 'Password', this.state.password);
-      this.addUser();
+      this.setState({ error: '' });
+      console.log('Successful Validation');
+      try {
+        const hashedPassword = this.hashPassword(password, 'SavourySalt');
+        console.log(hashedPassword);
+        return hashedPassword;
+      } catch (error) {
+        console.log('Error hashing password:', error);
+      }
+    }
+    console.log('Validation Failed');
+    return null;
+  };
+
+  signUp = async () => {
+    try {
+      this.setState({ isLoading: true });
+      const hashedPassword = await this.validateAndHash(
+        this.state.email,
+        this.state.password,
+        this.state.firstName,
+        this.state.lastName,
+      );
+
+      if (hashedPassword !== null) {
+        this.addUser(hashedPassword);
+      }
+      console.log('First Name:', this.state.firstName, 'Last Name:', this.state.lastName, 'Email:', this.state.email, 'Password:', this.state.password);
+    } catch (error) {
+      console.log(error);
     }
   };
 

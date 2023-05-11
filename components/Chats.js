@@ -86,7 +86,13 @@ export default class ChatsView extends Component {
                   </View>
                 </TouchableHighlight>
               )}
-              ListEmptyComponent={<Text>No conversations. Try creating one in the menu</Text>}
+              ListEmptyComponent={(
+                <View style={styles.noDataText}>
+                  <Text style={styles.noDataText}>
+                    You have no conversations. Try creating one!
+                  </Text>
+                </View>
+)}
               ListHeaderComponent={(
                 <View />
           )}

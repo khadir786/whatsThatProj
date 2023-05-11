@@ -11,7 +11,7 @@ const Tab = createMaterialTopTabNavigator();
 export default class TabNav extends Component {
   render() {
     return (
-      <Tab.Navigator>
+      <Tab.Navigator screenOptions={{ tabBarIndicatorStyle: { backgroundColor: '#7376AB' } }}>
         <Tab.Screen
           name="Chats"
           component={ChatsView}

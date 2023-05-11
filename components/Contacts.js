@@ -161,7 +161,11 @@ export default class ContactsView extends Component {
               </View>
             </TouchableHighlight>
           )}
-          ListEmptyComponent={<Text>You have no contacts. Try adding one!</Text>}
+          ListEmptyComponent={(
+            <View style={styles.noDataText}>
+              <Text style={styles.noDataText}>You have no contacts. Try adding one!</Text>
+            </View>
+)}
           ListHeaderComponent={(
             <Button
               color="#7376AB"
