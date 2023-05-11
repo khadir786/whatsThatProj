@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
 import crypto from 'crypto';
+import { handleShowToast } from './toastUtils';
 import { styles } from './stylesheets';
 
 export default class SignUpView extends Component {
@@ -95,7 +96,6 @@ export default class SignUpView extends Component {
 
   signUp = async () => {
     try {
-      this.setState({ isLoading: true });
       const hashedPassword = await this.validateAndHash(
         this.state.email,
         this.state.password,
@@ -104,6 +104,7 @@ export default class SignUpView extends Component {
       );
 
       if (hashedPassword !== null) {
+        this.setState({ isLoading: true });
         this.addUser(hashedPassword);
       }
       console.log('First Name:', this.state.firstName, 'Last Name:', this.state.lastName, 'Email:', this.state.email, 'Password:', this.state.password);
