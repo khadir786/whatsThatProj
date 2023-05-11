@@ -3,7 +3,6 @@ import { Component } from 'react';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ToastProvider } from 'react-native-toast-notifications'
 import MainNav from './components/MainNav';
 import LoginView from './components/Login';
 import SignUpView from './components/SignUp';
@@ -12,7 +11,6 @@ import NewConvoView from './components/NewConvo';
 import UserInfoView from './components/UserInfo';
 import ChatsView from './components/Chats';
 import ChatView from './components/Chat';
-import TabNav from './components/TabNav';
 import Home from './components/home';
 
 const AuthStack = createNativeStackNavigator();
