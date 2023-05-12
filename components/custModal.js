@@ -34,12 +34,13 @@ class CustModal extends Component {
       <Modal
         isVisible={isVisible}
         onBackdropPress={toggleModal}
-        backdropOpacity={0}
+        hasBackdrop={false}
+        coverScreen={false}
         animationIn="slideInUp"
         animationOut="slideOutDown"
       >
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ backgroundColor: 'lightgrey', padding: 20, borderRadius: 10 }}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+          <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: 20, borderRadius: 10 }}>
             <Text>{error}</Text>
           </View>
         </View>

@@ -9,6 +9,7 @@ import {
 import * as EmailValidator from 'email-validator';
 import crypto from 'crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class LoginView extends Component {
@@ -22,6 +23,7 @@ export default class LoginView extends Component {
       logged: false,
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
+      isModalVisible: false,
     };
   }
 
@@ -32,6 +34,12 @@ export default class LoginView extends Component {
     console.log(AsyncStorage.getItem('whatsthat_user_id'));
     console.log(AsyncStorage.getItem('whatsthat_session_token'));
   }
+
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
 
   hashPassword = (password, salt) => {
     let hash = crypto.pbkdf2Sync(password, salt, 100000, 256, 'sha256').toString('hex');
@@ -83,24 +91,23 @@ export default class LoginView extends Component {
   };
 
   loginButton = () => {
-    this.setState({ isLoading: true });
-    // validate email and password:
-    // check if email and password are not empty
-    // check if email is valid
-    // check password against regex
     const PASSWORD_REGEX = new RegExp('^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,30}$');
 
     if (this.state.email === '' || this.state.password === '') {
       this.setState({ error: 'Please enter email and password' });
+      this.toggleModal();
     } else if (!EmailValidator.validate(this.state.email)) {
       this.setState({ error: 'Please enter a valid email' });
+      this.toggleModal();
     } else if (!PASSWORD_REGEX.test(this.state.password)) {
       this.setState({
         error: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character '
           + '\n And it must be at least 8 characters long',
       });
+      this.toggleModal();
     } else {
       console.log('email', this.state.email, 'password', this.state.password);
+      this.setState({ isLoading: true });
       this.login();
     }
   };
@@ -113,6 +120,8 @@ export default class LoginView extends Component {
         </View>
       );
     }
+
+    const { error, isModalVisible } = this.state;
 
     return (
       <View style={styles.container}>
@@ -141,6 +150,13 @@ export default class LoginView extends Component {
         </TouchableOpacity>
 
         <Text style={{ color: 'red' }}>{this.state.error}</Text>
+
+        <CustModal
+          error={error}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }
