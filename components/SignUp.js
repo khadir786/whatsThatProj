@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
 import crypto from 'crypto';
-import { handleShowToast } from './toastUtils';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class SignUpView extends Component {
@@ -21,8 +21,15 @@ export default class SignUpView extends Component {
       error: '',
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
+      isModalVisible: false,
     };
   }
+
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
 
   addUser = async (hashedPassword) => {
     const toSend = {
@@ -68,17 +75,22 @@ export default class SignUpView extends Component {
 
     if (email === '' || password === '' || firstName === '' || lastName === '') {
       this.setState({ error: 'Please fill in each field' });
+      this.toggleModal();
     } else if (!NAME_REGEX.test(firstName)) {
       this.setState({ error: 'Please enter a valid first name' });
+      this.toggleModal();
     } else if (!NAME_REGEX.test(lastName)) {
       this.setState({ error: 'Please enter a valid last name' });
+      this.toggleModal();
     } else if (!EmailValidator.validate(email)) {
       this.setState({ error: 'Please enter a valid email' });
+      this.toggleModal();
     } else if (!PASSWORD_REGEX.test(password)) {
       this.setState({
         error: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character '
           + 'and it must be at least 8 characters long',
       });
+      this.toggleModal();
     } else {
       this.setState({ error: '' });
       console.log('Successful Validation');
@@ -121,7 +133,7 @@ export default class SignUpView extends Component {
         </View>
       );
     }
-
+    const { error, isModalVisible } = this.state;
     return (
       <View style={styles.container}>
         <TextInput
@@ -155,7 +167,14 @@ export default class SignUpView extends Component {
 
         <Button title="Sign Up" color="#7376AB" onPress={this.signUp} />
 
-        <Text style={{ color: 'red' }}>{this.state.error}</Text>
+        {/* <Text style={styles.errorText}>{this.state.error}</Text> */}
+
+        <CustModal
+          error={error}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }

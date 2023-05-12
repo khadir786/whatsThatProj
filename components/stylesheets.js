@@ -95,4 +95,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  errorText: {
+    fontWeight: 'bold',
+    color: 'red',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
 });
