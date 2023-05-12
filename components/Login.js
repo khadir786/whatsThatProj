@@ -149,7 +149,7 @@ export default class LoginView extends Component {
           <Text style={{ color: '#7376AB' }}>Don't have an account?</Text>
         </TouchableOpacity>
 
-        <Text style={{ color: 'red' }}>{this.state.error}</Text>
+        {/* <Text style={{ color: 'red' }}>{this.state.error}</Text> */}
 
         <CustModal
           error={error}

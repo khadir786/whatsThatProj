@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class ContactsView extends Component {
@@ -14,12 +15,13 @@ export default class ContactsView extends Component {
     this.state = {
       isLoading: true,
       contactsData: [],
-      isModalVisible: null,
+      addContactModal: false,
       newContactID: '',
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
       selectedItem: null,
       error: '',
+      isModalVisible: false,
     };
   }
 
@@ -50,6 +52,12 @@ export default class ContactsView extends Component {
     } catch (error) { console.log(error); }
   }
 
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
+
   async addContact() {
     try {
       const id = this.state.newContactID;
@@ -61,11 +69,12 @@ export default class ContactsView extends Component {
         },
       });
       if (response.status === 200) {
-        this.setState({ isModalVisible: null });
+        this.setState({ addContactModal: false });
         this.getContacts();
       } else if (response.status === 400) {
         console.log("You can't add yourself as a contact");
         this.setState({ error: "You can't add yourself as a contact" });
+        this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }
@@ -82,7 +91,8 @@ export default class ContactsView extends Component {
       if (response.status === 200) {
         this.getContacts();
       } else if (response.status === 400) {
-        console.log("You can't remove yourself as a contact");
+        this.setState({ error: "You can't remove yourself as a contact" });
+        this.toggleModal();
       }
     } catch (error) {
       console.log(error);
@@ -93,9 +103,10 @@ export default class ContactsView extends Component {
     const {
       isLoading,
       contactsData,
-      isModalVisible,
+      addContactModal,
       selectedItem,
       error,
+      isModalVisible,
     } = this.state;
 
     if (isLoading) {
@@ -112,8 +123,8 @@ export default class ContactsView extends Component {
         <Modal
           animationType="fade"
           transparent
-          visible={!!isModalVisible} // converts truthy to true and falsy to false
-          onRequestClose={() => this.setState({ isModalVisible: null })}
+          visible={addContactModal}
+          onRequestClose={() => this.setState({ addContactModal: false })}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -135,7 +146,7 @@ export default class ContactsView extends Component {
               </TouchableHighlight>
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                onPress={() => this.setState({ isModalVisible: null, error: '' })}
+                onPress={() => this.setState({ addContactModal: false, error: '' })}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
@@ -170,7 +181,7 @@ export default class ContactsView extends Component {
             <Button
               color="#7376AB"
               title="Add Contact"
-              onPress={() => this.setState({ isModalVisible: true })}
+              onPress={() => this.setState({ addContactModal: true })}
             />
           )}
         />
@@ -215,6 +226,12 @@ export default class ContactsView extends Component {
             </View>
           </View>
         </Modal>
+        <CustModal
+          error={error}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }
