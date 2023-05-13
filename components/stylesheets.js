@@ -85,8 +85,34 @@ export const styles = StyleSheet.create({
   },
   chatContainer: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    width: '100%',
+  },
+  userMessageContainer: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#DCF8C6',
+    padding: 8,
+    marginBottom: 8,
+    maxWidth: '70%',
+    borderRadius: 8,
+  },
+  otherMessageContainer: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFFFFF',
+    padding: 8,
+    marginBottom: 8,
+    maxWidth: '70%',
+    borderRadius: 8,
+  },
+  messageAuthor: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#000000',
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#000000',
   },
   noDataText: {
     fontWeight: 'bold',

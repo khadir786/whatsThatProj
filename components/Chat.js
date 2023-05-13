@@ -19,43 +19,60 @@ export default class ChatView extends Component {
       selectedItem: null,
       error: '',
       message: '',
-      chatDetails: this.props.route.params,
+      chatData: [],
+      userID: null,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({ isLoading: false });
+    this.getChatDetails();
     this.unsubscribe = this.state.navigation.addListener('focus', () => {
-      // this.getchatData();
+      this.getChatDetails();
     });
     const { navigation, route } = this.props;
     navigation.setOptions({ title: route.params.title });
     console.log('This is the chat screen');
+    this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
   }
 
   componentWillUnmount() {
     this.unsubscribe();
   }
 
-  sendMessage = async (message) => {
+  getChatDetails = async () => {
+    try {
+      const { navigation, route } = this.props;
+      const id = route.params.chat_id;
+      const response = await fetch(`http://localhost:3333/api/1.0.0//chat/${id}`, {
+        headers: {
+          'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+        },
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        this.setState({ chatData: data });
+      }
+    } catch (error) { console.log(error); }
+  };
+
+  sendMessage = async () => {
     const toSend = {
       message: this.state.message,
     };
-
-    return fetch('http://localhost:3333/api/1.0.0//chat/{chat_id}/message', {
+    const { navigation, route } = this.props;
+    const id = route.params.chat_id;
+    return fetch(`http://localhost:3333/api/1.0.0//chat/${id}/message`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
       },
       body: JSON.stringify(toSend),
     })
       .then((response) => {
-        if (response.status === 201) {
-          this.setState({ isLoading: false });
-          console.log('User added');
-          console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
-          console.log('Email: ', this.state.email, 'Password: ', this.state.password);
-          this.state.navigation.navigate('Login');
+        if (response.status === 200) {
+          console.log('Message Sent');
         } else if (response.status === 400) {
           this.setState({ error: 'Bad Request' });
         }
@@ -65,11 +82,27 @@ export default class ChatView extends Component {
       });
   };
 
+  renderMessage = ({ item }) => {
+    // get user id from state from async storage from componentwillmount
+    const isUserMessage = item.author.user_id === this.state.chatData.creator.user_id;
+    const messageContainerStyle = isUserMessage ? styles.userMessageContainer : styles.otherMessageContainer;
+
+    return (
+      <View style={messageContainerStyle}>
+        <Text style={styles.messageAuthor}>
+          {item.author.first_name}
+        </Text>
+        <Text style={styles.messageText}>{item.message}</Text>
+      </View>
+    );
+  };
+
   render() {
     const {
       isLoading,
-      selectedItem,
+      selectedMessage,
       error,
+      chatData,
     } = this.state;
 
     if (isLoading) {
@@ -79,24 +112,28 @@ export default class ChatView extends Component {
         </View>
       );
     }
-
+    const { navigation, route } = this.props;
+    const id = route.params.chat_id;
     return (
       <View style={styles.container}>
         <View style={styles.chatContainer}>
-          {/* render chat messages */}
+          <FlatList
+            data={chatData.messages}
+            keyExtractor={(item) => item.message_id.toString()}
+            renderItem={this.renderMessage}
+            inverted
+          />
         </View>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputMessage}
             placeholder="Type a message"
-            onChangeText={(text) => this.setState({ text })}
-            value={this.state.text}
+            onChangeText={(text) => this.setState({ message: text })}
+            value={this.state.message}
           />
           <Button
             title="Send"
-            onPress={() => {
-              // handle sending message logic
-            }}
+            onPress={this.sendMessage}
           />
         </View>
       </View>
