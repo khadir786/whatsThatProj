@@ -18,6 +18,8 @@ export default class ChatView extends Component {
       navigation: props.navigation,
       selectedItem: null,
       error: '',
+      message: '',
+      chatDetails: this.props.route.params,
     };
   }
 
@@ -35,14 +37,40 @@ export default class ChatView extends Component {
     this.unsubscribe();
   }
 
+  sendMessage = async (message) => {
+    const toSend = {
+      message: this.state.message,
+    };
+
+    return fetch('http://localhost:3333/api/1.0.0//chat/{chat_id}/message', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(toSend),
+    })
+      .then((response) => {
+        if (response.status === 201) {
+          this.setState({ isLoading: false });
+          console.log('User added');
+          console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
+          console.log('Email: ', this.state.email, 'Password: ', this.state.password);
+          this.state.navigation.navigate('Login');
+        } else if (response.status === 400) {
+          this.setState({ error: 'Bad Request' });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   render() {
     const {
       isLoading,
       selectedItem,
       error,
     } = this.state;
-
-    const { chatDetails } = this.props.route.params;
 
     if (isLoading) {
       return (

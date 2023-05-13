@@ -91,7 +91,6 @@ export const styles = StyleSheet.create({
   noDataText: {
     fontWeight: 'bold',
     color: 'rgb(166, 135, 135)',
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

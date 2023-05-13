@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Text, TextInput, View, Button, FlatList, ScrollView, ActivityIndicator, TouchableHighlight, Modal,
+  Text, TextInput, View, FlatList, ActivityIndicator, TouchableHighlight, Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './stylesheets';
@@ -19,8 +19,17 @@ export default class NewConvoView extends Component {
   }
 
   componentDidMount() {
-    this.getContacts();
     this.setState({ isLoading: false });
+    this.getContacts();
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.getContacts();
+      console.log('Contacts Screen');
+    });
+  }
+
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   async getContacts() {
@@ -54,7 +63,11 @@ export default class NewConvoView extends Component {
         members.forEach((member) => {
           this.addMember(member.user_id, convoDetails.chat_id);
         });
-        this.props.navigation.navigate('Chat', convoDetails.chat_id);
+        this.setState({ modalVisible: false });
+        this.props.navigation.navigate('Chat', {
+          title: convoName,
+          chat_id: convoDetails.chat_id,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -115,6 +128,7 @@ export default class NewConvoView extends Component {
                   style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                   onPress={() => {
                     this.newConvo(this.state.convoTitle, convoMembers);
+                    console.log('Button Pressed');
                   }}
                 >
                   <Text style={styles.modalButtonText}>Add</Text>
@@ -131,8 +145,10 @@ export default class NewConvoView extends Component {
             </View>
           </Modal>
         </View>
-        <View>
-          <Text>Which of your contacts should be in the conversation?</Text>
+        <View style={styles.noDataText}>
+          <Text style={styles.noDataText}>
+            Which of your contacts should be in the conversation?
+          </Text>
         </View>
 
         {isButtonVisible && (
@@ -187,3 +203,5 @@ export default class NewConvoView extends Component {
     );
   }
 }
+
+// if title isn't empty, addconvo

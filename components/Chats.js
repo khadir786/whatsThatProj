@@ -3,7 +3,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView, TouchableHighlight,
+  View, Text, ActivityIndicator, FlatList, ScrollView, TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './stylesheets';
@@ -76,6 +76,7 @@ export default class ChatsView extends Component {
                   onPress={() => {
                     navigation.navigate('Chat', {
                       title: item.name,
+                      chat_id: item.chat_id,
                     });
                   }}
                   underlayColor="#F4E2E3"
