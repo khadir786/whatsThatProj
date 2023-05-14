@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
-  TouchableHighlight,
+  TouchableHighlight, TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './stylesheets';
@@ -31,7 +31,15 @@ export default class ChatView extends Component {
       this.getChatDetails();
     });
     const { navigation, route } = this.props;
-    navigation.setOptions({ title: route.params.title });
+    navigation.setOptions({
+      title: route.params.title,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: () => (
+        <TouchableOpacity onPress={() => console.log('Button pressed!')}>
+          <Text style={{ marginRight: 10 }}>Info</Text>
+        </TouchableOpacity>
+      ),
+    });
     console.log('This is the chat screen');
     this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
   }
@@ -73,6 +81,8 @@ export default class ChatView extends Component {
       .then((response) => {
         if (response.status === 200) {
           console.log('Message Sent');
+          this.getChatDetails();
+          this.setState({ message: '' });
         } else if (response.status === 400) {
           this.setState({ error: 'Bad Request' });
         }
@@ -84,7 +94,8 @@ export default class ChatView extends Component {
 
   renderMessage = ({ item }) => {
     // get user id from state from async storage from componentwillmount
-    const isUserMessage = item.author.user_id === this.state.chatData.creator.user_id;
+    // eslint-disable-next-line eqeqeq
+    const isUserMessage = item.author.user_id == this.state.userID;
     const messageContainerStyle = isUserMessage ? styles.userMessageContainer : styles.otherMessageContainer;
 
     return (
