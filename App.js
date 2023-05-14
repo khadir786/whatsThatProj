@@ -12,6 +12,7 @@ import UserInfoView from './components/UserInfo';
 import ChatsView from './components/Chats';
 import ChatView from './components/Chat';
 import Home from './components/home';
+import ChatInfoView from './components/ChatInfo';
 
 const AuthStack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ export default class App extends Component {
           <AuthStack.Screen name="Account Information" component={UserInfoView} />
           <AuthStack.Screen name="Chats" component={ChatsView} options={{ headerShown: false }} />
           <AuthStack.Screen name="Chat" component={ChatView} options={{ headerShown: true }} />
+          <AuthStack.Screen name="Chat Info" component={ChatInfoView} options={{ headerShown: true }} />
         </AuthStack.Navigator>
       </NavigationContainer>
     );

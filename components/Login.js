@@ -81,6 +81,7 @@ export default class LoginView extends Component {
           }
         } else if (response.status === 400) {
           this.setState({ error: 'Invalid email/password' });
+          this.toggleModal();
           console.log('Bad request - Invalid email/password supplied');
           console.log(pass);
         }

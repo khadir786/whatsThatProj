@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
   },
   userMessageContainer: {
     alignSelf: 'flex-end',
-    backgroundColor: '#DCF8C6',
+    backgroundColor: '#D5AECC',
     padding: 8,
     marginBottom: 8,
     maxWidth: '70%',

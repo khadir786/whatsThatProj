@@ -31,17 +31,19 @@ export default class ChatView extends Component {
       this.getChatDetails();
     });
     const { navigation, route } = this.props;
+    const id = route.params.chat_id;
+    console.log(`Chat ID: ${id}`);
+    this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
     navigation.setOptions({
       title: route.params.title,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
-        <TouchableOpacity onPress={() => console.log('Button pressed!')}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Chat Info', { chat_id: id })}>
           <Text style={{ marginRight: 10 }}>Info</Text>
         </TouchableOpacity>
       ),
     });
     console.log('This is the chat screen');
-    this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
   }
 
   componentWillUnmount() {
@@ -96,7 +98,8 @@ export default class ChatView extends Component {
     // get user id from state from async storage from componentwillmount
     // eslint-disable-next-line eqeqeq
     const isUserMessage = item.author.user_id == this.state.userID;
-    const messageContainerStyle = isUserMessage ? styles.userMessageContainer : styles.otherMessageContainer;
+    const messageContainerStyle = isUserMessage
+      ? styles.userMessageContainer : styles.otherMessageContainer;
 
     return (
       <View style={messageContainerStyle}>
