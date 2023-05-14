@@ -83,6 +83,12 @@ export default class ChatView extends Component {
 
   sendMessage = async () => {
     this.getChatDetails();
+    if (this.state.message.trim() === '') {
+      this.setState({ modalMessage: 'You need to enter something first!' });
+      console.log(this.state.modalMessage);
+      this.toggleModal();
+      return Promise.resolve();
+    }
     const toSend = {
       message: this.state.message,
     };
