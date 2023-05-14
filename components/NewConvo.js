@@ -3,6 +3,7 @@ import {
   Text, TextInput, View, FlatList, ActivityIndicator, TouchableHighlight, Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class NewConvoView extends Component {
@@ -15,6 +16,8 @@ export default class NewConvoView extends Component {
       modalVisible: null,
       convoTitle: '',
       navigation: this.props,
+      isModalVisible: false,
+      modalMessage: '',
     };
   }
 
@@ -26,7 +29,6 @@ export default class NewConvoView extends Component {
       console.log('Contacts Screen');
     });
   }
-
 
   componentWillUnmount() {
     this.unsubscribe();
@@ -45,6 +47,12 @@ export default class NewConvoView extends Component {
       }
     } catch (error) { console.log(error); }
   }
+
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
 
   async newConvo(convoName, members) {
     try {
@@ -93,7 +101,7 @@ export default class NewConvoView extends Component {
 
   render() {
     const {
-      isLoading, contactsData, convoMembers, modalVisible, convoTitle,
+      isLoading, contactsData, convoMembers, modalVisible, convoTitle, modalMessage, isModalVisible,
     } = this.state;
 
     if (isLoading) {
@@ -127,8 +135,16 @@ export default class NewConvoView extends Component {
                 <TouchableHighlight
                   style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                   onPress={() => {
-                    this.newConvo(this.state.convoTitle, convoMembers);
-                    console.log('Button Pressed');
+                    const { convoTitle, convoMembers } = this.state;
+                    const sanitizedTitle = convoTitle.trim(); // Trim whitespaces
+                    if (sanitizedTitle === '') {
+                      this.setState({ modalMessage: 'You must enter a conversation name' });
+                      console.log(this.state.modalMessage);
+                      this.toggleModal();
+                    } else {
+                      this.newConvo(sanitizedTitle, convoMembers);
+                      console.log('Button Pressed');
+                    }
                   }}
                 >
                   <Text style={styles.modalButtonText}>Add</Text>
@@ -167,7 +183,7 @@ export default class NewConvoView extends Component {
           keyExtractor={(item) => item.user_id.toString()}
           renderItem={({ item }) => {
             const index = convoMembers.findIndex((member) => member.user_id === item.user_id);
-            console.log(`Index: ${index}`);
+            // console.log(`Index: ${index}`);
             const isSelected = index !== -1; // boolean: true if index is not -1
             return (
               <TouchableHighlight
@@ -198,10 +214,13 @@ export default class NewConvoView extends Component {
           }}
           ListEmptyComponent={<Text>You have no contacts. Try adding one!</Text>}
         />
-
+        <CustModal
+          error={modalMessage}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }
 }
-
-// if title isn't empty, addconvo

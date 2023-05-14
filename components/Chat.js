@@ -4,9 +4,10 @@
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
-  TouchableHighlight, TouchableOpacity,
+  TouchableHighlight, TouchableOpacity, Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class ChatView extends Component {
@@ -21,25 +22,27 @@ export default class ChatView extends Component {
       message: '',
       chatData: [],
       userID: null,
+      isModalVisible: false,
+      modalMessage: '',
     };
   }
 
   async componentDidMount() {
     this.setState({ isLoading: false });
     this.getChatDetails();
-    this.unsubscribe = this.state.navigation.addListener('focus', () => {
-      this.getChatDetails();
-    });
+    this.updateChat = setInterval(this.getChatDetails, 3000);
+    this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
+
     const { navigation, route } = this.props;
     const id = route.params.chat_id;
     console.log(`Chat ID: ${id}`);
-    this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
+
     navigation.setOptions({
       title: route.params.title,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
         <TouchableOpacity onPress={() => this.props.navigation.navigate('Chat Info', { chat_id: id })}>
-          <Text style={{ marginRight: 10 }}>Info</Text>
+          <Image source={require('../assets/info.png')} style={{ marginRight: 10, width: 20, height: 20 }} />
         </TouchableOpacity>
       ),
     });
@@ -47,8 +50,14 @@ export default class ChatView extends Component {
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    clearInterval(this.updateInterval);
   }
+
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
 
   getChatDetails = async () => {
     try {
@@ -62,11 +71,18 @@ export default class ChatView extends Component {
       if (response.status === 200) {
         const data = await response.json();
         this.setState({ chatData: data });
+      } else if (response.status === 403) {
+        this.setState({ modalMessage: 'You are no longer part of this chat :(' });
+        this.toggleModal();
+      } else {
+        console.log('Failed to fetch chat data');
+        console.log(response.status);
       }
     } catch (error) { console.log(error); }
   };
 
   sendMessage = async () => {
+    this.getChatDetails();
     const toSend = {
       message: this.state.message,
     };
@@ -115,7 +131,8 @@ export default class ChatView extends Component {
     const {
       isLoading,
       selectedMessage,
-      error,
+      modalMessage,
+      isModalVisible,
       chatData,
     } = this.state;
 
@@ -150,6 +167,12 @@ export default class ChatView extends Component {
             onPress={this.sendMessage}
           />
         </View>
+        <CustModal
+          error={modalMessage}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }

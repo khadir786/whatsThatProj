@@ -73,6 +73,8 @@ export default class ChatInfoView extends Component {
       if (response.status === 200) {
         const chatData = await response.json();
         this.setState({ chatData });
+      } else if (response.status === 403) {
+        this.setState({ modalMessage: 'You are no longer part of this chat :(' });
       } else {
         console.log('Failed to fetch chat data');
       }
@@ -126,31 +128,41 @@ export default class ChatInfoView extends Component {
     } catch (error) { console.log(error); }
   }
 
-  async deleteContact(id) {
+  async removeMember(id) {
     try {
+      const { route } = this.props;
+      const { chat_id } = route.params;
+      const sessionToken = await AsyncStorage.getItem('whatsthat_session_token');
       console.log(id);
-      const response = await fetch(`http://localhost:3333/api/1.0.0/user/${id}/contact/`, {
+
+      if (this.isCreatorName(id)) {
+        this.setState({ modalMessage: "You can't remove yourself from the chat!" });
+        this.toggleModal();
+        return;
+      }
+      const response = await fetch(`http://localhost:3333/api/1.0.0/chat/${chat_id}/user/${id}`, {
         method: 'DELETE',
         headers: {
-          'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+          'X-Authorization': sessionToken,
         },
       });
       if (response.status === 200) {
-        this.getContacts();
-      } else if (response.status === 400) {
-        this.setState({ modalMessage: "You can't remove yourself as a contact" });
-        this.toggleModal();
+        this.getChatInfo();
+      } else {
+        console.log(response.status);
       }
     } catch (error) {
       console.log(error);
     }
   }
 
-  iscreator() {
-    if (this.state.userID == this.state.chatData.creator.user_id) {
-      return true;
-    }
-    return false;
+  isCreatorName(userID) {
+    const { chatData } = this.state;
+    return userID === chatData.creator.user_id;
+  }
+
+  isCreator() {
+    return this.state.userID == this.state.chatData.creator.user_id;
   }
 
   render() {
@@ -168,11 +180,11 @@ export default class ChatInfoView extends Component {
 
     console.log(chatData);
     console.log(chatData.members);
-    // PROBLEM: THE GETCHATINFO IS DONE AFTER THE RENDER SO CHATDATA IS EMPTY HERE
 
     return (
 
       <View style={styles.tabContainer}>
+
         <FlatList
           data={chatData.members}
           keyExtractor={(item) => item.user_id.toString()}
@@ -187,6 +199,7 @@ export default class ChatInfoView extends Component {
                   {item.first_name}
                   {' '}
                   {item.last_name}
+                  {this.isCreatorName(item.user_id) ? ' (creator)' : ''}
                 </Text>
                 <Text style={{ fontWeight: '200' }}>{item.email}</Text>
               </View>
@@ -195,7 +208,7 @@ export default class ChatInfoView extends Component {
         />
 
         <Modal
-          visible={(!!selectedItem) && this.iscreator()} // converts truthy true and falsy to false
+          visible={(!!selectedItem) && this.isCreator()} // converts truthy true and falsy to false
           transparent
           animationType="fade"
           onRequestClose={() => this.setState({ selectedItem: null })}
@@ -213,7 +226,7 @@ export default class ChatInfoView extends Component {
                 onPress={() => {
                   console.log(`Remove from ${selectedItem?.first_name} from chat?`);
                   this.setState({ selectedItem: null });
-                  this.deleteContact(selectedItem.user_id);
+                  this.removeMember(selectedItem.user_id);
                 }}
               >
                 <Text style={styles.modalButtonText}>Remove from Chat?</Text>
@@ -225,6 +238,7 @@ export default class ChatInfoView extends Component {
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
+
             </View>
           </View>
         </Modal>
@@ -238,3 +252,5 @@ export default class ChatInfoView extends Component {
     );
   }
 }
+
+// NEXT: cannot delete yourself from chat
