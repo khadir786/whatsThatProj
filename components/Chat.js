@@ -1,7 +1,7 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable global-require */
 /* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
-/* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
@@ -24,6 +24,9 @@ export default class ChatView extends Component {
       isModalVisible: false,
       modalMessage: '',
       messageModalVisible: false,
+      currentMessage: '',
+      newMessage: '',
+      messageID: null,
     };
   }
 
@@ -41,7 +44,7 @@ export default class ChatView extends Component {
       title: route.params.title,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Chat Info', { chat_id: id })}>
+        <TouchableOpacity onPress={() => navigation.navigate('Chat Info', { chat_id: id })}>
           <Image source={require('../assets/info.png')} style={{ marginRight: 10, width: 20, height: 20 }} />
         </TouchableOpacity>
       ),
@@ -61,7 +64,7 @@ export default class ChatView extends Component {
 
   getChatDetails = async () => {
     try {
-      const { navigation, route } = this.props;
+      const { route } = this.props;
       const id = route.params.chat_id;
       const response = await fetch(`http://localhost:3333/api/1.0.0//chat/${id}`, {
         headers: {
@@ -85,7 +88,6 @@ export default class ChatView extends Component {
     this.getChatDetails();
     if (this.state.message.trim() === '') {
       this.setState({ modalMessage: 'You need to enter something first!' });
-      console.log(this.state.modalMessage);
       this.toggleModal();
       return Promise.resolve();
     }
@@ -108,7 +110,68 @@ export default class ChatView extends Component {
           this.getChatDetails();
           this.setState({ message: '' });
         } else if (response.status === 400) {
-          this.setState({ error: 'Bad Request' });
+          this.setState({ modalMessage: 'Bad Request' });
+          this.toggleModal();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  deleteMessage = async (messageID) => {
+    const { route } = this.props;
+    const id = route.params.chat_id;
+    return fetch(`http://localhost:3333/api/1.0.0/chat/${id}/message/${messageID}`, {
+      method: 'DELETE',
+      headers: {
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ modalMessage: 'Message deleted!' });
+          this.toggleModal();
+        } else if (response.status === 400) {
+          this.setState({ modalMessage: 'Bad Request' });
+          this.toggleModal();
+        } else if (response.status === 403) {
+          this.setState({ modalMessage: "You can't delete someone else's message!" });
+          this.toggleModal();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  updateMessage = async (messageEdit) => {
+    if (messageEdit === '') {
+      this.setState({ modalMessage: 'You need to enter something first!' });
+
+      this.toggleModal();
+      return Promise.resolve();
+    }
+    const toSend = {
+      message: messageEdit,
+    };
+    const { route } = this.props;
+    const id = route.params.chat_id;
+    return fetch(`http://localhost:3333/api/1.0.0//chat/${id}/message`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+      body: JSON.stringify(toSend),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ modalMessage: 'Message Updated!' });
+          this.toggleModal();
+        } else if (response.status === 400) {
+          this.setState({ modalMessage: 'Bad Request' });
+          this.toggleModal();
         }
       })
       .catch((error) => {
@@ -117,9 +180,17 @@ export default class ChatView extends Component {
   };
 
   renderMessage = ({ item }) => {
-    const { selectedMessage } = this.state;
+    const {
+      selectedMessage,
+      userID,
+      messageModalVisible,
+      modalMessage,
+      currentMessage,
+      newMessage,
+      messageID,
+    } = this.state;
     // eslint-disable-next-line eqeqeq
-    const isUserMessage = item.author.user_id == this.state.userID;
+    const isUserMessage = item.author.user_id == userID;
     const messageContainerStyle = isUserMessage
       ? styles.userMessageContainer : styles.otherMessageContainer;
     const isItemSelected = selectedMessage && selectedMessage.message_id === item.message_id;
@@ -129,7 +200,12 @@ export default class ChatView extends Component {
       <View>
         <TouchableHighlight
           style={[messageContainerStyle, messageHighlightStyle]}
-          onPress={() => this.setState({ selectedMessage: item, messageModalVisible: true })}
+          onPress={() => this.setState({
+            selectedMessage: item,
+            messageModalVisible: true,
+            currentMessage: item.message,
+            messageID: item.message_id,
+          })}
           underlayColor="#F4E2E3"
         >
           <View>
@@ -137,6 +213,51 @@ export default class ChatView extends Component {
             <Text style={styles.messageText}>{item.message}</Text>
           </View>
         </TouchableHighlight>
+
+        <Modal
+          animationType="fade"
+          transparent
+          visible={messageModalVisible}
+          onRequestClose={() => this.setState({ messageModalVisible: false })}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TextInput
+                style={styles.input}
+                placeholder="Edit message"
+                onChangeText={(text) => this.setState({ newMessage: text })}
+                defaultValue={currentMessage}
+              />
+
+              <TouchableHighlight
+                style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
+                onPress={() => {
+                  this.updateMessage(newMessage);
+                }}
+              >
+                <Text style={styles.modalButtonText}>Update</Text>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                style={[styles.modalButton, { backgroundColor: 'red' }]}
+                onPress={() => {
+                  this.deleteMessage(messageID);
+                  this.setState({ messageModalVisible: false });
+                }}
+              >
+                <Text style={styles.modalButtonText}>Delete</Text>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                style={[styles.modalButton, { backgroundColor: 'gray' }]}
+                onPress={() => this.setState({ messageModalVisible: false, modalMessage: '' })}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableHighlight>
+
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   };
@@ -144,11 +265,10 @@ export default class ChatView extends Component {
   render() {
     const {
       isLoading,
-      selectedMessage,
       modalMessage,
       isModalVisible,
       chatData,
-      messageModalVisible,
+      message,
     } = this.state;
 
     if (isLoading) {
@@ -158,8 +278,6 @@ export default class ChatView extends Component {
         </View>
       );
     }
-    const { navigation, route } = this.props;
-    const id = route.params.chat_id;
     return (
       <View style={styles.container}>
         <View style={styles.chatContainer}>
@@ -175,7 +293,7 @@ export default class ChatView extends Component {
             style={styles.inputMessage}
             placeholder="Type a message"
             onChangeText={(text) => this.setState({ message: text })}
-            value={this.state.message}
+            value={message}
           />
           <Button
             title="Send"
