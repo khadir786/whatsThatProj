@@ -183,8 +183,8 @@ export default class NewConvoView extends Component {
           keyExtractor={(item) => item.user_id.toString()}
           renderItem={({ item }) => {
             const index = convoMembers.findIndex((member) => member.user_id === item.user_id);
-            // console.log(`Index: ${index}`);
             const isSelected = index !== -1; // boolean: true if index is not -1
+
             return (
               <TouchableHighlight
                 style={styles.listItem}

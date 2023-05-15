@@ -135,6 +135,7 @@ export default class ContactsView extends Component {
                 value={this.state.newContactID}
               />
               <Text style={{ color: 'red' }}>{error}</Text>
+
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                 onPress={() => {
@@ -144,15 +145,18 @@ export default class ContactsView extends Component {
               >
                 <Text style={styles.modalButtonText}>Add</Text>
               </TouchableHighlight>
+
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'gray' }]}
                 onPress={() => this.setState({ addContactModal: false, error: '' })}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
+
             </View>
           </View>
         </Modal>
+
         <FlatList
           data={contactsData}
           keyExtractor={(item) => item.user_id.toString()}
@@ -171,6 +175,7 @@ export default class ContactsView extends Component {
                 <Text style={{ fontWeight: '200' }}>{item.email}</Text>
               </View>
             </TouchableHighlight>
+
           )}
           ListEmptyComponent={(
             <View style={styles.noDataText}>
@@ -193,11 +198,13 @@ export default class ContactsView extends Component {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
+
               <Text style={styles.modalTitle}>
                 {selectedItem?.first_name}
                 {' '}
                 {selectedItem?.last_name}
               </Text>
+
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'green' }]}
                 onPress={() => {
@@ -207,6 +214,7 @@ export default class ContactsView extends Component {
               >
                 <Text style={styles.modalButtonText}>Start Conversation</Text>
               </TouchableHighlight>
+
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'red' }]}
                 onPress={() => {
@@ -217,12 +225,14 @@ export default class ContactsView extends Component {
               >
                 <Text style={styles.modalButtonText}>Delete Contact</Text>
               </TouchableHighlight>
+
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'gray' }]}
                 onPress={() => { this.setState({ selectedItem: null }); }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableHighlight>
+
             </View>
           </View>
         </Modal>

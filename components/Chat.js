@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable react/destructuring-assignment */
@@ -16,14 +17,13 @@ export default class ChatView extends Component {
     this.state = {
       isLoading: true,
       // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
-      selectedItem: null,
-      error: '',
+      selectedMessage: null,
       message: '',
       chatData: [],
       userID: null,
       isModalVisible: false,
       modalMessage: '',
+      messageModalVisible: false,
     };
   }
 
@@ -92,7 +92,7 @@ export default class ChatView extends Component {
     const toSend = {
       message: this.state.message,
     };
-    const { navigation, route } = this.props;
+    const { route } = this.props;
     const id = route.params.chat_id;
     return fetch(`http://localhost:3333/api/1.0.0//chat/${id}/message`, {
       method: 'post',
@@ -117,18 +117,26 @@ export default class ChatView extends Component {
   };
 
   renderMessage = ({ item }) => {
-    // get user id from state from async storage from componentwillmount
+    const { selectedMessage } = this.state;
     // eslint-disable-next-line eqeqeq
     const isUserMessage = item.author.user_id == this.state.userID;
     const messageContainerStyle = isUserMessage
       ? styles.userMessageContainer : styles.otherMessageContainer;
+    const isItemSelected = selectedMessage && selectedMessage.message_id === item.message_id;
+    const messageHighlightStyle = isItemSelected ? styles.highlightedMessage : null;
 
     return (
-      <View style={messageContainerStyle}>
-        <Text style={styles.messageAuthor}>
-          {item.author.first_name}
-        </Text>
-        <Text style={styles.messageText}>{item.message}</Text>
+      <View>
+        <TouchableHighlight
+          style={[messageContainerStyle, messageHighlightStyle]}
+          onPress={() => this.setState({ selectedMessage: item, messageModalVisible: true })}
+          underlayColor="#F4E2E3"
+        >
+          <View>
+            <Text style={styles.messageAuthor}>{item.author.first_name}</Text>
+            <Text style={styles.messageText}>{item.message}</Text>
+          </View>
+        </TouchableHighlight>
       </View>
     );
   };
@@ -140,6 +148,7 @@ export default class ChatView extends Component {
       modalMessage,
       isModalVisible,
       chatData,
+      messageModalVisible,
     } = this.state;
 
     if (isLoading) {
@@ -173,6 +182,7 @@ export default class ChatView extends Component {
             onPress={this.sendMessage}
           />
         </View>
+
         <CustModal
           error={modalMessage}
           isVisible={isModalVisible}
