@@ -3,33 +3,35 @@
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
-  TouchableHighlight,
+  TouchableHighlight, Picker,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustModal from './custModal';
 import { styles } from './stylesheets';
 
-export default class ContactsView extends Component {
+export default class SearchView extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
-      contactsData: [],
+      usersData: [],
       addContactModal: false,
       newContactID: '',
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
-      selectedItem: null, // Set initial value to null
-      error: '',
+      selectedItem: null,
+      modalMessage: '',
       isModalVisible: false,
+      query: '',
+      searchWhere: '',
+      blockedData: [],
     };
   }
 
   componentDidMount() {
     this.setState({ isLoading: false });
-    this.getContacts();
-    this.unsubscribe = this.state.navigation.addListener('focus', () => {
-      this.getContacts();
+    const { navigation, route } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       console.log('Contacts Screen');
     });
   }
@@ -52,15 +54,56 @@ export default class ContactsView extends Component {
     } catch (error) { console.log(error); }
   }
 
+  async getBlocked() {
+    return fetch('http://localhost:3333/api/1.0.0/blocked/', {
+      headers: {
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          // isLoading: false,
+          blockedData: responseJson,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   toggleModal = () => {
     this.setState((prevState) => ({
       isModalVisible: !prevState.isModalVisible,
     }));
   };
 
-  async addContact() {
+  async Search() {
     try {
-      const id = this.state.newContactID;
+      const { searchWhere, query } = this.state;
+      console.log(`Query was: ${query}`);
+      let request = 'http://localhost:3333/api/1.0.0/search/';
+      if (query !== '') {
+        request = request.concat(`?q=${query}&search_in=${searchWhere}`);
+      } else {
+        request = request.concat(`?search_in=${searchWhere}`);
+      }
+      console.log(`Request was: ${request}`);
+      const response = await fetch(request, {
+        headers: {
+          'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+        },
+      });
+      if (response.status === 200) {
+        const users = await response.json();
+        console.log(users);
+        this.setState({ usersData: users });
+      }
+    } catch (error) { console.log(error); }
+  }
+
+  async addContact(id) {
+    try {
       console.log(`Contact ID: ${id}`);
       const response = await fetch(`http://localhost:3333/api/1.0.0/user/${id}/contact/`, {
         method: 'POST',
@@ -71,42 +114,53 @@ export default class ContactsView extends Component {
       if (response.status === 200) {
         this.setState({ addContactModal: false });
         this.getContacts();
+        this.setState({ modalMessage: 'Contact added successfully' });
+        this.toggleModal();
       } else if (response.status === 400) {
         console.log("You can't add yourself as a contact");
-        this.setState({ error: "You can't add yourself as a contact" });
+        this.setState({ modalMessage: "You can't add yourself as a contact" });
         this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }
 
-  async deleteContact(id) {
+  async blockUser(id) {
     try {
-      console.log(id);
-      const response = await fetch(`http://localhost:3333/api/1.0.0/user/${id}/contact/`, {
-        method: 'DELETE',
+      console.log(`Contact ID: ${id}`);
+      // eslint-disable-next-line eqeqeq
+      const isUserID = id == await AsyncStorage.getItem('whatsthat_user_id');
+      console.log(isUserID);
+      const response = await fetch(`http://localhost:3333/api/1.0.0/user/${id}/block/`, {
+        method: 'POST',
         headers: {
           'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
         },
       });
       if (response.status === 200) {
-        this.getContacts();
-      } else if (response.status === 400) {
-        this.setState({ error: "You can't remove yourself as a contact" });
+        this.setState({ modalMessage: 'User blocked successfully' });
         this.toggleModal();
+      } else if (response.status === 400) {
+        console.log(response);
+        if (isUserID) {
+          this.setState({ modalMessage: "You can't block yourself..." });
+          this.toggleModal();
+        } else {
+          this.setState({ modalMessage: "You can't block people not in your contacts list" });
+          this.toggleModal();
+        }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   }
 
   render() {
     const {
       isLoading,
-      contactsData,
-      addContactModal,
+      usersData,
       selectedItem,
-      error,
+      modalMessage,
       isModalVisible,
+      query,
+      searchWhere,
     } = this.state;
 
     if (isLoading) {
@@ -120,45 +174,33 @@ export default class ContactsView extends Component {
     return (
 
       <View style={styles.tabContainer}>
-        <Modal
-          animationType="fade"
-          transparent
-          visible={addContactModal}
-          onRequestClose={() => this.setState({ addContactModal: false })}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter contact ID"
-                onChangeText={(text) => this.setState({ newContactID: text })}
-                value={this.state.newContactID}
-              />
-              <Text style={{ color: 'red' }}>{error}</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputMessage}
+            placeholder="Search for a user..."
+            onChangeText={(text) => this.setState({ query: text })}
+            value={query}
+          />
 
-              <TouchableHighlight
-                style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
-                onPress={() => {
-                  this.addContact();
-                  this.setState({ error: '' });
-                }}
-              >
-                <Text style={styles.modalButtonText}>Add</Text>
-              </TouchableHighlight>
-
-              <TouchableHighlight
-                style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                onPress={() => this.setState({ addContactModal: false, error: '' })}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableHighlight>
-
-            </View>
+          <View style={styles.dropDownContainer}>
+            <Picker
+              style={styles.dropDown}
+              selectedValue={searchWhere}
+              onValueChange={(value) => this.setState({ searchWhere: value })}
+            >
+              <Picker.Item label="All" value="all" />
+              <Picker.Item label="Contacts" value="contacts" />
+            </Picker>
           </View>
-        </Modal>
+
+          <Button
+            title="Send"
+            onPress={() => this.Search()}
+          />
+        </View>
 
         <FlatList
-          data={contactsData}
+          data={usersData}
           keyExtractor={(item) => item.user_id.toString()}
           renderItem={({ item }) => (
             <TouchableHighlight
@@ -168,9 +210,11 @@ export default class ContactsView extends Component {
             >
               <View style={styles.listItem}>
                 <Text style={styles.contactText}>
-                  {item.first_name}
+                  {item.given_name}
                   {' '}
-                  {item.last_name}
+                  {item.family_name}
+                  {' #'}
+                  {item.user_id}
                 </Text>
                 <Text style={{ fontWeight: '200' }}>{item.email}</Text>
               </View>
@@ -179,17 +223,11 @@ export default class ContactsView extends Component {
           )}
           ListEmptyComponent={(
             <View style={styles.noDataText}>
-              <Text style={styles.noDataText}>You have no contacts. Try adding one!</Text>
+              <Text style={styles.noDataText}>No users found</Text>
             </View>
-)}
-          ListHeaderComponent={(
-            <Button
-              color="#7376AB"
-              title="Add Contact"
-              onPress={() => this.setState({ addContactModal: true })}
-            />
-          )}
+            )}
         />
+
         <Modal
           visible={!!selectedItem} // converts truthy to true and falsy to false
           transparent
@@ -200,30 +238,29 @@ export default class ContactsView extends Component {
             <View style={styles.modalContent}>
 
               <Text style={styles.modalTitle}>
-                {selectedItem?.first_name}
+                {selectedItem?.given_name}
                 {' '}
-                {selectedItem?.last_name}
+                {selectedItem?.family_name}
               </Text>
 
               <TouchableHighlight
-                style={[styles.modalButton, { backgroundColor: 'green' }]}
+                style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                 onPress={() => {
-                  console.log(`Start conversation with ${selectedItem?.first_name}`);
+                  this.addContact(selectedItem.user_id);
                   this.setState({ selectedItem: null });
                 }}
               >
-                <Text style={styles.modalButtonText}>Start Conversation</Text>
+                <Text style={styles.modalButtonText}>Add Contact</Text>
               </TouchableHighlight>
 
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: 'red' }]}
                 onPress={() => {
-                  console.log(`Delete contact ${selectedItem?.first_name}`);
+                  this.blockUser(selectedItem.user_id);
                   this.setState({ selectedItem: null });
-                  this.deleteContact(selectedItem.user_id);
                 }}
               >
-                <Text style={styles.modalButtonText}>Delete Contact</Text>
+                <Text style={styles.modalButtonText}>Block User</Text>
               </TouchableHighlight>
 
               <TouchableHighlight
@@ -237,7 +274,7 @@ export default class ContactsView extends Component {
           </View>
         </Modal>
         <CustModal
-          error={error}
+          error={modalMessage}
           isVisible={isModalVisible}
           toggleModal={this.toggleModal}
           duration={3000}

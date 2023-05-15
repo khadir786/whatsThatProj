@@ -128,4 +128,18 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
 
   },
+  dropDownContainer: {
+    width: 100,
+    height: 40,
+    marginLeft: 10,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#F7EBEC',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  dropDown: {
+    flex: 1,
+    paddingLeft: 10,
+  },
 });

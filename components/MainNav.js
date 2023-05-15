@@ -9,6 +9,7 @@ import UserInfoView from './UserInfo';
 import BlockedView from './Blocked';
 import NewConvoView from './NewConvo';
 import LogoutButton from './LogoutButton';
+import SearchView from './Search';
 
 const Drawer = createDrawerNavigator();
 
@@ -29,6 +30,11 @@ export default class MainNav extends Component {
           name="Account Information"
           component={UserInfoView}
           options={{ drawerLabel: 'Account Information' }}
+        />
+        <Drawer.Screen
+          name="Search"
+          component={SearchView}
+          options={{ drawerLabel: 'Search' }}
         />
         <Drawer.Screen
           name="Blocked"
