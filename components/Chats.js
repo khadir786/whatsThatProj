@@ -16,7 +16,6 @@ export default class ChatsView extends Component {
       chatData: [],
       // eslint-disable-next-line react/prop-types
       navigation: props.navigation,
-      selectedItem: null,
     };
   }
 
@@ -52,7 +51,6 @@ export default class ChatsView extends Component {
       chatData,
       navigation,
       isLoading,
-      selectedItem,
     } = this.state;
     if (isLoading) {
       return (

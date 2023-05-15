@@ -145,10 +145,9 @@ export default class ChatView extends Component {
       });
   };
 
-  updateMessage = async (messageEdit) => {
+  updateMessage = async (messageEdit, messageID) => {
     if (messageEdit === '') {
       this.setState({ modalMessage: 'You need to enter something first!' });
-
       this.toggleModal();
       return Promise.resolve();
     }
@@ -157,8 +156,8 @@ export default class ChatView extends Component {
     };
     const { route } = this.props;
     const id = route.params.chat_id;
-    return fetch(`http://localhost:3333/api/1.0.0//chat/${id}/message`, {
-      method: 'post',
+    return fetch(`http://localhost:3333/api/1.0.0//chat/${id}/message/${messageID}`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
@@ -171,6 +170,9 @@ export default class ChatView extends Component {
           this.toggleModal();
         } else if (response.status === 400) {
           this.setState({ modalMessage: 'Bad Request' });
+          this.toggleModal();
+        } else if (response.status === 403) {
+          this.setState({ modalMessage: "You can't edit someone else's message!" });
           this.toggleModal();
         }
       })
@@ -232,7 +234,8 @@ export default class ChatView extends Component {
               <TouchableHighlight
                 style={[styles.modalButton, { backgroundColor: '#7376AB' }]}
                 onPress={() => {
-                  this.updateMessage(newMessage);
+                  this.updateMessage(newMessage, messageID);
+                  this.setState({ messageModalVisible: false });
                 }}
               >
                 <Text style={styles.modalButtonText}>Update</Text>
