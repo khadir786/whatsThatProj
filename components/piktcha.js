@@ -47,7 +47,7 @@ export default class CameraView extends Component {
     return (
       <View style={styles.container}>
 
-        <CameraTakePicture />
+        {/* <CameraTakePicture /> */}
 
         <CustModal
           error={modalMessage}
