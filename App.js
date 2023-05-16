@@ -3,16 +3,16 @@ import { Component } from 'react';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MainNav from './components/MainNav';
-import LoginView from './components/Login';
-import SignUpView from './components/SignUp';
-import BlockedView from './components/Blocked';
-import NewConvoView from './components/NewConvo';
-import UserInfoView from './components/UserInfo';
-import ChatsView from './components/Chats';
-import ChatView from './components/Chat';
-import Home from './components/home';
-import ChatInfoView from './components/ChatInfo';
+import MainNav from './src/views/MainNav';
+import LoginView from './src/views/Login';
+import SignUpView from './src/views/SignUp';
+import BlockedView from './src/views/Blocked';
+import NewConvoView from './src/views/NewConvo';
+import UserInfoView from './src/views/UserInfo';
+import ChatsView from './src/views/Chats';
+import ChatView from './src/views/Chat';
+import Home from './src/views/home';
+import ChatInfoView from './src/views/ChatInfo';
 
 const AuthStack = createNativeStackNavigator();
 

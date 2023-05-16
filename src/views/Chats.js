@@ -6,7 +6,7 @@ import {
   View, Text, ActivityIndicator, FlatList, ScrollView, TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styles } from './stylesheets';
+import { styles } from '../styles/stylesheets';
 
 export default class ChatsView extends Component {
   constructor(props) {
@@ -22,7 +22,8 @@ export default class ChatsView extends Component {
   componentDidMount() {
     this.setState({ isLoading: false });
     this.getChats();
-    this.unsubscribe = this.state.navigation.addListener('focus', () => {
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       this.getChats();
       console.log('Chat List Screen');
     });

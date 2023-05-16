@@ -9,8 +9,8 @@ import {
 import * as EmailValidator from 'email-validator';
 import crypto from 'crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class LoginView extends Component {
   constructor(props) {
@@ -49,6 +49,7 @@ export default class LoginView extends Component {
   };
 
   login = async () => {
+    const { navigation } = this.props;
     const pass = this.hashPassword(this.state.password, 'SavourySalt');
     const toSend = {
       email: this.state.email,
@@ -75,7 +76,7 @@ export default class LoginView extends Component {
             console.log(AsyncStorage.getItem('whatsthat_user_id'));
             console.log(AsyncStorage.getItem('whatsthat_session_token'));
             this.setState({ error: '' });
-            this.state.navigation.navigate('MainApp');
+            navigation.navigate('MainApp');
           } catch {
             console.log('something went wrong');
           }
@@ -123,6 +124,7 @@ export default class LoginView extends Component {
     }
 
     const { error, isModalVisible } = this.state;
+    const { navigation } = this.props;
 
     return (
       <View style={styles.container}>
@@ -145,7 +147,7 @@ export default class LoginView extends Component {
 
         <TouchableOpacity
           style={{ backgroundColor: 'transparent' }}
-          onPress={() => this.state.navigation.navigate('Sign Up')}
+          onPress={() => navigation.navigate('Sign Up')}
         >
           <Text style={{ color: '#7376AB' }}>Don't have an account?</Text>
         </TouchableOpacity>

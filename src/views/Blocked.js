@@ -3,8 +3,8 @@ import {
   Text, View, FlatList, TouchableHighlight, Button, Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class BlockedView extends Component {
   constructor(props) {

@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import * as EmailValidator from 'email-validator';
 import crypto from 'crypto';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class SignUpView extends Component {
   constructor(props) {
@@ -32,6 +32,7 @@ export default class SignUpView extends Component {
   };
 
   addUser = async (hashedPassword) => {
+    const { navigation } = this.props;
     const toSend = {
       first_name: this.state.firstName,
       last_name: this.state.lastName,
@@ -52,7 +53,7 @@ export default class SignUpView extends Component {
           console.log('User added');
           console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
           console.log('Email: ', this.state.email, 'Password: ', this.state.password);
-          this.state.navigation.navigate('Login');
+          navigation.navigate('Login');
         } else if (response.status === 400) {
           this.setState({ error: 'Bad Request' });
         }

@@ -7,8 +7,8 @@ import {
   TouchableHighlight, TouchableOpacity, Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -44,7 +44,7 @@ export default class ChatView extends Component {
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.navigate('Chat Info', { chat_id: id })}>
-          <Image source={require('../assets/info.png')} style={{ marginRight: 10, width: 20, height: 20 }} />
+          <Image source={require('../../assets/info.png')} style={{ marginRight: 10, width: 20, height: 20 }} />
         </TouchableOpacity>
       ),
     });
@@ -63,7 +63,7 @@ export default class ChatView extends Component {
 
   getChatDetails = async () => {
     try {
-      console.log('update chat called')
+      console.log('update chat called');
       const { route } = this.props;
       const id = route.params.chat_id;
       const response = await fetch(`http://localhost:3333/api/1.0.0//chat/${id}`, {

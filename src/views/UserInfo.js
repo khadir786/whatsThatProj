@@ -5,8 +5,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import crypto from 'crypto';
 import * as EmailValidator from 'email-validator';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class UserInfoView extends Component {
   constructor(props) {
@@ -142,6 +142,7 @@ export default class UserInfoView extends Component {
           if (response.status === 200) {
             console.log('User updated');
             this.setState({ modalMessage: 'User updated' });
+            this.toggleModal();
             console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
             console.log('Email: ', this.state.newEmail, 'Password: ', this.state.newPassword);
             await this.getUserInfo();

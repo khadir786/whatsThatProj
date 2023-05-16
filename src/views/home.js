@@ -3,7 +3,7 @@ import {
   Text, View, Button,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styles } from './stylesheets';
+import { styles } from '../styles/stylesheets';
 
 class Home extends Component {
   static navigationOptions = {
@@ -24,12 +24,14 @@ class Home extends Component {
   checkLogged = async () => {
     // change var name 'token' for security
     const token = await AsyncStorage.getItem('whatsthat_session_token');
+    const { navigation } = this.props;
     if (token != null) {
-      this.state.navigation.navigate('MainApp');
+      navigation.navigate('MainApp');
     }
   };
 
   render() {
+    const { navigation } = this.props;
     return (
       <View style={styles.container}>
         <Text>WhatsThat</Text>
@@ -37,7 +39,7 @@ class Home extends Component {
         <Button
           title="Login"
           color="#7376AB"
-          onPress={() => this.state.navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Login')}
         />
 
       </View>

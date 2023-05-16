@@ -6,15 +6,14 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustModal from './custModal';
-import { styles } from './stylesheets';
+import CustModal from '../custModal';
+import { styles } from '../styles/stylesheets';
 
 export default class ChatInfoView extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
-      chatID: null,
       chatData: [],
       userID: null,
       // eslint-disable-next-line react/prop-types
@@ -30,8 +29,8 @@ export default class ChatInfoView extends Component {
     this.setState({ userID: await AsyncStorage.getItem('whatsthat_user_id') });
     this.getContacts();
     this.getChatInfo();
-
-    this.unsubscribe = this.state.navigation.addListener('focus', () => {
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       this.getContacts();
       this.getChatInfo();
       console.log('Chat Info Screen');

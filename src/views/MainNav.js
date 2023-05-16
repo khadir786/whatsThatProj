@@ -8,7 +8,7 @@ import TabNav from './TabNav';
 import UserInfoView from './UserInfo';
 import BlockedView from './Blocked';
 import NewConvoView from './NewConvo';
-import LogoutButton from './LogoutButton';
+import LogoutButton from '../LogoutButton';
 import SearchView from './Search';
 
 const Drawer = createDrawerNavigator();
