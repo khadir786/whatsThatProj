@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import crypto from 'crypto';
+import * as EmailValidator from 'email-validator';
 import CustModal from './custModal';
 import { styles } from './stylesheets';
 
@@ -28,7 +29,14 @@ export default class UserInfoView extends Component {
   componentDidMount() {
     this.getUserInfo();
     this.setState({ isLoading: false });
-    console.log('account info page');
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.getUserInfo();
+      console.log('account info page');
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   onClickUpdate = () => {
@@ -62,37 +70,91 @@ export default class UserInfoView extends Component {
     }));
   };
 
-  updateUser = async () => {
-    const toSend = {
-      first_name: this.state.firstName,
-      last_name: this.state.lastName,
-      email: this.state.newEmail,
-      password: this.state.newPassword,
-    };
+  hashPassword = (password, salt) => {
+    let hash = crypto.pbkdf2Sync(password, salt, 100000, 256, 'sha256').toString('hex');
+    hash += 'p1L!ow';
+    // Sanitise hash
+    return hash.replace(/[^a-zA-Z0-9!@#$%^&*]/g, '');
+  };
 
-    const userID = await AsyncStorage.getItem('whatsthat_user_id');
-    return fetch(`http://localhost:3333/api/1.0.0/user/${userID}`, {
-      method: 'PATCH',
-      headers: {
-        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(toSend),
-    })
-      .then(async (response) => {
-        if (response.status === 200) {
-          console.log('User updated');
-          this.setState({ modalMessage: 'User updated' });
-          console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
-          console.log('Email: ', this.state.email);
-          await this.getUserInfo();
-        } else if (response.status === 400) {
-          this.setState({ modalMessage: 'Bad Request' });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
+  validateAndHash = async (email, password, firstName, lastName) => {
+    const PASSWORD_REGEX = new RegExp('^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,30}$');
+    const NAME_REGEX = new RegExp("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
+
+    if (email === '' && password === '' && firstName === '' && lastName === '') {
+      this.setState({ modalMessage: 'Please fill in a field' });
+      this.toggleModal();
+    } else if (!NAME_REGEX.test(firstName)) {
+      this.setState({ modalMessage: 'Please enter a valid first name' });
+      this.toggleModal();
+    } else if (!NAME_REGEX.test(lastName)) {
+      this.setState({ modalMessage: 'Please enter a valid last name' });
+      this.toggleModal();
+    } else if (!EmailValidator.validate(email)) {
+      this.setState({ modalMessage: 'Please enter a valid email' });
+      this.toggleModal();
+    } else if (!PASSWORD_REGEX.test(password)) {
+      this.setState({
+        modalMessage: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character '
+          + 'and it must be at least 8 characters long',
       });
+      this.toggleModal();
+    } else {
+      this.setState({ modalMessage: '' });
+      console.log('Successful Validation');
+      try {
+        const hashedPassword = this.hashPassword(password, 'SavourySalt');
+        console.log(hashedPassword);
+        return hashedPassword;
+      } catch (error) {
+        console.log('Error hashing password:', error);
+      }
+    }
+    console.log('Validation Failed');
+    return null;
+  };
+
+  updateUser = async () => {
+    const hashedPassword = await this.validateAndHash(
+      this.state.newEmail,
+      this.state.newPassword,
+      this.state.firstName,
+      this.state.lastName,
+    );
+    if (hashedPassword !== null) {
+      const toSend = {
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        email: this.state.newEmail,
+        password: hashedPassword,
+      };
+
+      const userID = await AsyncStorage.getItem('whatsthat_user_id');
+      return fetch(`http://localhost:3333/api/1.0.0/user/${userID}`, {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(toSend),
+      })
+        .then(async (response) => {
+          if (response.status === 200) {
+            console.log('User updated');
+            this.setState({ modalMessage: 'User updated' });
+            console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
+            console.log('Email: ', this.state.newEmail, 'Password: ', this.state.newPassword);
+            await this.getUserInfo();
+            this.onClickUpdate();
+          } else if (response.status === 400) {
+            this.setState({ modalMessage: 'Bad Request' });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    return Promise.resolve();
   };
 
   render() {
