@@ -11,8 +11,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    backgroundColor: 'white',
-    margin: '5px',
+    marginVertical: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 4,
   },
   tabContainer: {
     flex: 1,
@@ -27,6 +31,7 @@ export const styles = StyleSheet.create({
     // borderColor: '#ccc',
     padding: 10,
     width: '100%',
+    marginBottom: 16,
   },
   modalContainer: {
     flex: 1,
@@ -141,5 +146,16 @@ export const styles = StyleSheet.create({
   dropDown: {
     flex: 1,
     paddingLeft: 10,
+  },
+  editContainer: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
+  },
+  listItemText: {
+    marginBottom: 8,
   },
 });

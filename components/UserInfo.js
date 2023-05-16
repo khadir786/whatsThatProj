@@ -170,30 +170,26 @@ export default class UserInfoView extends Component {
 
     return (
       <View style={styles.container}>
-        <View><Text>Account Information</Text></View>
-        {(this.state.isEditable) ? (
-          <View style={styles.container}>
+        {this.state.isEditable ? (
+          <View style={styles.editContainer}>
             <TextInput
               style={styles.input}
               placeholder="First Name"
               value={this.state.firstName}
               onChangeText={(firstName) => this.setState({ firstName })}
             />
-
             <TextInput
               style={styles.input}
               placeholder="Last Name"
               value={this.state.lastName}
               onChangeText={(lastName) => this.setState({ lastName })}
             />
-
             <TextInput
               style={styles.input}
               placeholder="email@example.com"
               value={this.state.newEmail}
               onChangeText={(newEmail) => this.setState({ newEmail })}
             />
-
             <TextInput
               style={styles.input}
               placeholder="********"
@@ -201,32 +197,32 @@ export default class UserInfoView extends Component {
               secureTextEntry
               onChangeText={(newPassword) => this.setState({ newPassword })}
             />
-
-            <Button title="Update" color="#7376AB" onPress={this.updateUser} />
-            <Button title="Cancel" color="grey" onPress={this.onClickUpdate} />
-
+            <View style={styles.buttonContainer}>
+              <Button title="Update" color="#7376AB" onPress={this.updateUser} />
+              <Button title="Cancel" color="grey" onPress={this.onClickUpdate} />
+            </View>
           </View>
         ) : (
           <FlatList
             data={this.state.userData}
             renderItem={({ item }) => (
               <View style={styles.listItem}>
-                <Text>
+                <Text style={styles.listItemText}>
                   User ID:
                   {' '}
                   {item.user_id}
                 </Text>
-                <Text>
+                <Text style={styles.listItemText}>
                   First Name:
                   {' '}
                   {item.first_name}
                 </Text>
-                <Text>
+                <Text style={styles.listItemText}>
                   Last Name:
                   {' '}
                   {item.last_name}
                 </Text>
-                <Text>
+                <Text style={styles.listItemText}>
                   Email:
                   {' '}
                   {item.email}
