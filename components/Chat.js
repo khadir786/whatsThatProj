@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable global-require */
 /* eslint-disable no-console */
-/* eslint-disable prefer-regex-literals */
 import React, { Component } from 'react';
 import {
   View, Text, Button, ActivityIndicator, FlatList, Modal, TextInput,
@@ -53,7 +52,7 @@ export default class ChatView extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.updateInterval);
+    clearInterval(this.updateChat);
   }
 
   toggleModal = () => {
@@ -64,6 +63,7 @@ export default class ChatView extends Component {
 
   getChatDetails = async () => {
     try {
+      console.log('update chat called')
       const { route } = this.props;
       const id = route.params.chat_id;
       const response = await fetch(`http://localhost:3333/api/1.0.0//chat/${id}`, {

@@ -18,6 +18,7 @@ export default class MainNav extends Component {
   render() {
     return (
       <Drawer.Navigator
+        initialRouteName="MainApp"
         screenOptions={{ drawerActiveTintColor: '#7376AB' }}
         drawerContent={(props) => <LogoutButton {...props} />}
       >
