@@ -10,6 +10,7 @@ import BlockedView from './Blocked';
 import NewConvoView from './NewConvo';
 import LogoutButton from './LogoutButton';
 import SearchView from './Search';
+import CameraView from './piktcha';
 
 const Drawer = createDrawerNavigator();
 
@@ -46,6 +47,11 @@ export default class MainNav extends Component {
           name="New Conversation"
           component={NewConvoView}
           options={{ drawerLabel: 'New Conversation' }}
+        />
+        <Drawer.Screen
+          name="Picture"
+          component={CameraView}
+          options={{ drawerLabel: 'Picture' }}
         />
       </Drawer.Navigator>
     );
