@@ -3,6 +3,8 @@ import {
   Text, TextInput, View, Button, FlatList, ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import crypto from 'crypto';
+import CustModal from './custModal';
 import { styles } from './stylesheets';
 
 export default class UserInfoView extends Component {
@@ -14,9 +16,10 @@ export default class UserInfoView extends Component {
       isEditable: false,
       firstName: '',
       lastName: '',
-      email: '',
-      password: '',
-      error: '',
+      newEmail: '',
+      newPassword: '',
+      modalMessage: '',
+      isModalVisible: false,
       // eslint-disable-next-line react/prop-types
     };
     this.updateUser = this.updateUser.bind(this);
@@ -29,9 +32,9 @@ export default class UserInfoView extends Component {
   }
 
   onClickUpdate = () => {
-    const editToggle = !this.state.isEditable;
-    this.setState({ isEditable: editToggle });
-    console.log(`Editable: ${editToggle}`);
+    this.setState((prevState) => ({
+      isEditable: !prevState.isEditable,
+    }));
   };
 
   async getUserInfo() {
@@ -53,13 +56,18 @@ export default class UserInfoView extends Component {
       });
   }
 
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      isModalVisible: !prevState.isModalVisible,
+    }));
+  };
+
   updateUser = async () => {
-    this.onClickUpdate();
     const toSend = {
       first_name: this.state.firstName,
       last_name: this.state.lastName,
-      email: this.state.email,
-      password: this.state.password,
+      email: this.state.newEmail,
+      password: this.state.newPassword,
     };
 
     const userID = await AsyncStorage.getItem('whatsthat_user_id');
@@ -74,11 +82,12 @@ export default class UserInfoView extends Component {
       .then(async (response) => {
         if (response.status === 200) {
           console.log('User updated');
+          this.setState({ modalMessage: 'User updated' });
           console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
-          console.log('Email: ', this.state.email, 'Password: ', this.state.password);
+          console.log('Email: ', this.state.email);
           await this.getUserInfo();
         } else if (response.status === 400) {
-          this.setState({ error: 'Bad Request' });
+          this.setState({ modalMessage: 'Bad Request' });
         }
       })
       .catch((error) => {
@@ -87,6 +96,8 @@ export default class UserInfoView extends Component {
   };
 
   render() {
+    const { isModalVisible, modalMessage } = this.state;
+
     if (this.state.isLoading) {
       return (
         <View style={styles.container}>
@@ -117,19 +128,20 @@ export default class UserInfoView extends Component {
             <TextInput
               style={styles.input}
               placeholder="email@example.com"
-              value={this.state.email}
-              onChangeText={(email) => this.setState({ email })}
+              value={this.state.newEmail}
+              onChangeText={(newEmail) => this.setState({ newEmail })}
             />
 
             <TextInput
               style={styles.input}
               placeholder="********"
-              value={this.state.password}
+              value={this.state.newPassword}
               secureTextEntry
-              onChangeText={(password) => this.setState({ password })}
+              onChangeText={(newPassword) => this.setState({ newPassword })}
             />
 
             <Button title="Update" color="#7376AB" onPress={this.updateUser} />
+            <Button title="Cancel" color="grey" onPress={this.onClickUpdate} />
 
           </View>
         ) : (
@@ -163,7 +175,12 @@ export default class UserInfoView extends Component {
             keyExtractor={(item) => item.user_id.toString()}
           />
         )}
-
+        <CustModal
+          error={modalMessage}
+          isVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          duration={3000}
+        />
       </View>
     );
   }
