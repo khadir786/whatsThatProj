@@ -46,5 +46,4 @@ export default class LogoutButton extends Component {
       </DrawerContentScrollView>
     );
   }
-  
 }

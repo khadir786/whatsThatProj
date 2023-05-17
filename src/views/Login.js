@@ -21,8 +21,6 @@ export default class LoginView extends Component {
       password: '',
       error: '',
       logged: false,
-      // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
       isModalVisible: false,
     };
   }
@@ -85,6 +83,9 @@ export default class LoginView extends Component {
           this.toggleModal();
           console.log('Bad request - Invalid email/password supplied');
           console.log(pass);
+        } else if (response.status === 500) {
+          this.setState({ error: 'Internal Server Error - Try again later' });
+          this.toggleModal();
         }
       })
       .catch((error) => {

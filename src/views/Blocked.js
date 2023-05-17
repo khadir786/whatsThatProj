@@ -63,6 +63,15 @@ export default class BlockedView extends Component {
         console.log("You can't block yourself...");
         this.setState({ modalMessage: "You can't unblock yourself..." });
         this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ modalMessage: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 404) {
+        this.setState({ modalMessage: 'User not found, they may have been removed' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }

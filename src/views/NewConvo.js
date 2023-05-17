@@ -15,7 +15,6 @@ export default class NewConvoView extends Component {
       convoMembers: [],
       modalVisible: null,
       convoTitle: '',
-      navigation: this.props,
       isModalVisible: false,
       modalMessage: '',
     };
@@ -24,7 +23,8 @@ export default class NewConvoView extends Component {
   componentDidMount() {
     this.setState({ isLoading: false });
     this.getContacts();
-    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       this.getContacts();
       console.log('Contacts Screen');
     });
@@ -56,6 +56,7 @@ export default class NewConvoView extends Component {
 
   async newConvo(convoName, members) {
     try {
+      const { navigation } = this.props;
       const toSend = { name: convoName };
       const response = await fetch('http://localhost:3333/api/1.0.0/chat/', {
         method: 'POST',
@@ -72,10 +73,19 @@ export default class NewConvoView extends Component {
           this.addMember(member.user_id, convoDetails.chat_id);
         });
         this.setState({ modalVisible: false });
-        this.props.navigation.navigate('Chat', {
+        navigation.navigate('Chat', {
           title: convoName,
           chat_id: convoDetails.chat_id,
         });
+      } else if (response.status === 400) {
+        this.setState({ modalMessage: 'Please enter a valid name' });
+        this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ modalMessage: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) {
       console.log(error);
@@ -93,6 +103,18 @@ export default class NewConvoView extends Component {
       });
       if (response.status === 200) {
         console.log(`Added members with ID: ${memberID}`);
+      } else if (response.status === 400) {
+        this.setState({ modalMessage: 'Invalid request' });
+        this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ modalMessage: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 404) {
+        this.setState({ modalMessage: 'User not found, they may have been removed' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) {
       console.log(error);

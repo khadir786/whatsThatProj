@@ -14,8 +14,6 @@ export default class ChatsView extends Component {
     this.state = {
       isLoading: true,
       chatData: [],
-      // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
     };
   }
 
@@ -50,9 +48,10 @@ export default class ChatsView extends Component {
   render() {
     const {
       chatData,
-      navigation,
       isLoading,
     } = this.state;
+
+    const { navigation } = this.props;
     if (isLoading) {
       return (
         <View style={styles.container}>

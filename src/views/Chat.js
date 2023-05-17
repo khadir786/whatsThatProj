@@ -110,7 +110,16 @@ export default class ChatView extends Component {
           this.getChatDetails();
           this.setState({ message: '' });
         } else if (response.status === 400) {
-          this.setState({ modalMessage: 'Bad Request' });
+          this.setState({ modalMessage: 'You cannot send that message' });
+          this.toggleModal();
+        } else if (response.status === 401) {
+          this.setState({ modalMessage: 'Invalid credentials' });
+          this.toggleModal();
+        } else if (response.status === 404) {
+          this.setState({ modalMessage: 'Chat not found, you may have been removed :(' });
+          this.toggleModal();
+        } else if (response.status === 500) {
+          this.setState({ modalMessage: 'Internal Server Error - Try again later' });
           this.toggleModal();
         }
       })
@@ -135,8 +144,17 @@ export default class ChatView extends Component {
         } else if (response.status === 400) {
           this.setState({ modalMessage: 'Bad Request' });
           this.toggleModal();
+        } else if (response.status === 401) {
+          this.setState({ modalMessage: 'Invalid credentials' });
+          this.toggleModal();
         } else if (response.status === 403) {
           this.setState({ modalMessage: "You can't delete someone else's message!" });
+          this.toggleModal();
+        } else if (response.status === 404) {
+          this.setState({ modalMessage: 'The message has already been deleted...' });
+          this.toggleModal();
+        } else if (response.status === 500) {
+          this.setState({ modalMessage: 'Internal Server Error - Try again later' });
           this.toggleModal();
         }
       })

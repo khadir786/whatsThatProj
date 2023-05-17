@@ -18,7 +18,6 @@ export default class SearchView extends Component {
       addContactModal: false,
       newContactID: '',
       // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
       selectedItem: null,
       modalMessage: '',
       isModalVisible: false,
@@ -54,24 +53,6 @@ export default class SearchView extends Component {
     } catch (error) { console.log(error); }
   }
 
-  async getBlocked() {
-    return fetch('http://localhost:3333/api/1.0.0/blocked/', {
-      headers: {
-        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
-      },
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          // isLoading: false,
-          blockedData: responseJson,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   toggleModal = () => {
     this.setState((prevState) => ({
       isModalVisible: !prevState.isModalVisible,
@@ -80,7 +61,7 @@ export default class SearchView extends Component {
 
   async Search() {
     try {
-      const { searchWhere, query } = this.state;
+      const { searchWhere, query, modalMessage } = this.state;
       console.log(`Query was: ${query}`);
       let request = 'http://localhost:3333/api/1.0.0/search/';
       if (query !== '') {
@@ -98,6 +79,14 @@ export default class SearchView extends Component {
         const users = await response.json();
         console.log(users);
         this.setState({ usersData: users });
+      } else if (response.status === 400) {
+        this.setState({ modalMessage: 'Invalid search item' });
+      } else if (response.status === 401) {
+        this.setState({ modalMessage: 'Invalid login' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }
@@ -119,6 +108,15 @@ export default class SearchView extends Component {
       } else if (response.status === 400) {
         console.log("You can't add yourself as a contact");
         this.setState({ modalMessage: "You can't add yourself as a contact" });
+        this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ modalMessage: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 404) {
+        this.setState({ modalMessage: 'User not found, they may have been removed' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
         this.toggleModal();
       }
     } catch (error) { console.log(error); }
@@ -148,6 +146,8 @@ export default class SearchView extends Component {
           this.setState({ modalMessage: "You can't block people not in your contacts list" });
           this.toggleModal();
         }
+      } else if (response.status === 500) {
+        this.setState({ modalMessage: 'Internal Server Error - Try again later' });
       }
     } catch (error) { console.log(error); }
   }

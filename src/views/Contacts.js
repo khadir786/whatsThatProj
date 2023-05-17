@@ -17,8 +17,6 @@ export default class ContactsView extends Component {
       contactsData: [],
       addContactModal: false,
       newContactID: '',
-      // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
       selectedItem: null,
       error: '',
       isModalVisible: false,
@@ -49,6 +47,12 @@ export default class ContactsView extends Component {
       if (response.status === 200) {
         const contacts = await response.json();
         this.setState({ contactsData: contacts });
+      } else if (response.status === 401) {
+        this.setState({ error: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ error: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }
@@ -76,6 +80,15 @@ export default class ContactsView extends Component {
         console.log("You can't add yourself as a contact");
         this.setState({ error: "You can't add yourself as a contact" });
         this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ error: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 404) {
+        this.setState({ error: 'User not found, they may have been removed' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ error: 'Internal Server Error - Try again later' });
+        this.toggleModal();
       }
     } catch (error) { console.log(error); }
   }
@@ -93,6 +106,15 @@ export default class ContactsView extends Component {
         this.getContacts();
       } else if (response.status === 400) {
         this.setState({ error: "You can't remove yourself as a contact" });
+        this.toggleModal();
+      } else if (response.status === 401) {
+        this.setState({ error: 'Invalid credentials' });
+        this.toggleModal();
+      } else if (response.status === 404) {
+        this.setState({ error: 'User not found, they may have been removed' });
+        this.toggleModal();
+      } else if (response.status === 500) {
+        this.setState({ error: 'Internal Server Error - Try again later' });
         this.toggleModal();
       }
     } catch (error) {

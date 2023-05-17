@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-console */
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable react/destructuring-assignment */
@@ -19,8 +20,6 @@ export default class SignUpView extends Component {
       email: '',
       password: '',
       error: '',
-      // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
       isModalVisible: false,
     };
   }
@@ -51,11 +50,17 @@ export default class SignUpView extends Component {
         if (response.status === 201) {
           this.setState({ isLoading: false });
           console.log('User added');
+          this.setState({ error: 'User Added' });
+          this.toggleModal();
           console.log('First Name: ', this.state.firstName, 'Last Name: ', this.state.lastName);
           console.log('Email: ', this.state.email, 'Password: ', this.state.password);
           navigation.navigate('Login');
         } else if (response.status === 400) {
           this.setState({ error: 'Bad Request' });
+          this.toggleModal();
+        } else if (response.status === 500) {
+          this.setState({ error: 'Internal Server Error: Try again later' });
+          this.toggleModal();
         }
       })
       .catch((error) => {

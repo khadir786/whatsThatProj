@@ -17,7 +17,6 @@ export default class ChatInfoView extends Component {
       chatData: [],
       userID: null,
       // eslint-disable-next-line react/prop-types
-      navigation: props.navigation,
       selectedItem: null,
       modalMessage: '',
       isModalVisible: false,

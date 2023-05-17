@@ -29,7 +29,8 @@ export default class UserInfoView extends Component {
   componentDidMount() {
     this.getUserInfo();
     this.setState({ isLoading: false });
-    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       this.getUserInfo();
       console.log('account info page');
     });
@@ -149,6 +150,13 @@ export default class UserInfoView extends Component {
             this.onClickUpdate();
           } else if (response.status === 400) {
             this.setState({ modalMessage: 'Bad Request' });
+            this.toggleModal();
+          } else if (response.status === 401) {
+            this.setState({ modalMessage: 'Unauthorised: Credentials are not valid' });
+            this.toggleModal();
+          } else if (response.status === 500) {
+            this.setState({ modalMessage: 'Internal Server Error - Try again later' });
+            this.toggleModal();
           }
         })
         .catch((error) => {
