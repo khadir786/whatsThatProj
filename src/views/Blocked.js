@@ -19,6 +19,15 @@ export default class BlockedView extends Component {
 
   componentDidMount() {
     this.getBlocked();
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
+      this.getBlocked();
+      console.log('Contacts Screen');
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   async getBlocked() {

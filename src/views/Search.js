@@ -17,7 +17,6 @@ export default class SearchView extends Component {
       usersData: [],
       addContactModal: false,
       newContactID: '',
-      // eslint-disable-next-line react/prop-types
       selectedItem: null,
       modalMessage: '',
       isModalVisible: false,
@@ -29,14 +28,33 @@ export default class SearchView extends Component {
 
   componentDidMount() {
     this.setState({ isLoading: false });
-    const { navigation, route } = this.props;
+    const { navigation } = this.props;
+    this.getBlocked();
     this.unsubscribe = navigation.addListener('focus', () => {
-      console.log('Contacts Screen');
+      console.log('Search Screen');
+      this.getBlocked();
     });
   }
 
   componentWillUnmount() {
     this.unsubscribe();
+  }
+
+  async getBlocked() {
+    return fetch('http://localhost:3333/api/1.0.0/blocked/', {
+      headers: {
+        'X-Authorization': await AsyncStorage.getItem('whatsthat_session_token'),
+      },
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          blockedData: responseJson,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   async getContacts() {
@@ -61,7 +79,9 @@ export default class SearchView extends Component {
 
   async Search() {
     try {
-      const { searchWhere, query, modalMessage } = this.state;
+      const {
+        searchWhere, query, modalMessage, blockedData,
+      } = this.state;
       console.log(`Query was: ${query}`);
       let request = 'http://localhost:3333/api/1.0.0/search/';
       if (query !== '') {
@@ -77,8 +97,13 @@ export default class SearchView extends Component {
       });
       if (response.status === 200) {
         const users = await response.json();
-        console.log(users);
-        this.setState({ usersData: users });
+        const filteredUsers = users.filter((user) => {
+          // Check if the current user is blocked
+          const isBlocked = blockedData.some((blockedUser) => blockedUser.user_id === user.user_id);
+          return !isBlocked;
+        });
+        console.log(filteredUsers);
+        this.setState({ usersData: filteredUsers });
       } else if (response.status === 400) {
         this.setState({ modalMessage: 'Invalid search item' });
       } else if (response.status === 401) {
